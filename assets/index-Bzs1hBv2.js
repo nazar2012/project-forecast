@@ -1392,6 +1392,7 @@ Error generating stack: `+e.message+`
 		content: "";
 		position: absolute;
 		inset: 0;
+		
 		z-index: 3;
 		pointer-events: none;
 		background: ${({$position:e})=>e===0?`linear-gradient(to bottom, transparent 55%, rgba(0, 0, 0, 0.2))`:`rgba(0, 0, 0, 0.08)`};
@@ -1628,6 +1629,8 @@ Error generating stack: `+e.message+`
   color: #888888;
   font-size: 14px;
   text-align: center;
+
+  
 `,bb=N.a`
   color: #111111;
   font-weight: 700;
