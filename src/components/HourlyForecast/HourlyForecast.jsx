@@ -1,0 +1,291 @@
+import { useEffect, useRef, useState } from "react";
+import {
+  Chart,
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Tooltip,
+} from "chart.js";
+
+import {
+  ForecastSection,
+  ForecastHeader,
+  ForecastTitle,
+  ForecastCity,
+  CloseButton,
+  ChartWrapper,
+  ForecastLoading,
+  ForecastError,
+} from "./HourlyForecast.styled";
+
+Chart.register(
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Tooltip
+);
+
+const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
+
+export default function HourlyForecast({
+  city,
+  onClose,
+}) {
+  const canvasRef = useRef(null);
+  const chartRef = useRef(null);
+
+  const [forecast, setForecast] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const loadForecast = async () => {
+      try {
+        setLoading(true);
+        setError(false);
+
+        const response = await fetch(
+          `https://api.openweathermap.org/data/2.5/forecast?lat=${city.latitude}&lon=${city.longitude}&appid=${API_KEY}&units=metric`
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            `HTTP error: ${response.status}`
+          );
+        }
+
+        const data = await response.json();
+
+        if (
+          !data.list ||
+          !Array.isArray(data.list)
+        ) {
+          throw new Error(
+            "Forecast data is unavailable"
+          );
+        }
+
+        setForecast(data.list.slice(0, 16));
+      } catch (error) {
+        console.error(
+          "Ошибка загрузки почасового прогноза:",
+          error
+        );
+
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadForecast();
+  }, [city]);
+
+  useEffect(() => {
+    if (
+      loading ||
+      error ||
+      forecast.length === 0 ||
+      !canvasRef.current
+    ) {
+      return;
+    }
+
+    if (chartRef.current) {
+      chartRef.current.destroy();
+      chartRef.current = null;
+    }
+
+    const labels = forecast.map((item) => {
+      const date = new Date(item.dt * 1000);
+
+      return date.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        hour12: true,
+      });
+    });
+
+    const temperatures = forecast.map((item) =>
+      Math.round(item.main.temp)
+    );
+
+    const ctx =
+      canvasRef.current.getContext("2d");
+
+    chartRef.current = new Chart(ctx, {
+      type: "line",
+
+      data: {
+        labels,
+
+        datasets: [
+          {
+            data: temperatures,
+
+            borderColor: "#ffb36c",
+            borderWidth: 2,
+
+            backgroundColor:
+              "rgba(255, 179, 108, 0.08)",
+
+            pointBackgroundColor: "#ffb36c",
+            pointBorderColor: "#ffb36c",
+
+            pointRadius: 3,
+            pointHoverRadius: 5,
+
+            tension: 0.4,
+
+            fill: true,
+          },
+        ],
+      },
+
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+
+        animation: {
+          duration: 700,
+          easing: "easeOutQuart",
+        },
+
+        interaction: {
+          intersect: false,
+          mode: "index",
+        },
+
+        plugins: {
+          legend: {
+            display: false,
+          },
+
+          tooltip: {
+            enabled: true,
+
+            displayColors: false,
+
+            backgroundColor: "#111111",
+
+            titleColor: "#ffffff",
+            bodyColor: "#ffffff",
+
+            padding: 10,
+
+            cornerRadius: 8,
+
+            callbacks: {
+              title: (items) => {
+                return items[0]?.label || "";
+              },
+
+              label: (context) => {
+                return `${context.raw}°C`;
+              },
+            },
+          },
+        },
+
+        scales: {
+          x: {
+            grid: {
+              display: false,
+            },
+
+            border: {
+              display: false,
+            },
+
+            ticks: {
+              color: "#111111",
+
+              font: {
+                size: 9,
+              },
+
+              maxRotation: 0,
+              autoSkip: false,
+            },
+          },
+
+          y: {
+            grid: {
+              color:
+                "rgba(17, 17, 17, 0.08)",
+            },
+
+            border: {
+              display: false,
+            },
+
+            ticks: {
+              color: "#111111",
+
+              font: {
+                size: 9,
+              },
+
+              callback: (value) =>
+                `${value}°`,
+            },
+          },
+        },
+      },
+    });
+
+    return () => {
+      if (chartRef.current) {
+        chartRef.current.destroy();
+        chartRef.current = null;
+      }
+    };
+  }, [forecast, loading, error]);
+
+  return (
+    <ForecastSection>
+      <ForecastHeader>
+        <div>
+          <ForecastTitle>
+            Hourly forecast
+          </ForecastTitle>
+
+          <ForecastCity>
+            {city.name}
+          </ForecastCity>
+        </div>
+
+        <CloseButton
+          type="button"
+          onClick={onClose}
+          aria-label="Close hourly forecast"
+        >
+          <span>×</span>
+        </CloseButton>
+      </ForecastHeader>
+
+      <ChartWrapper>
+        {loading && (
+          <ForecastLoading>
+            Loading...
+          </ForecastLoading>
+        )}
+
+        {error && !loading && (
+          <ForecastError>
+            Failed to load forecast.
+          </ForecastError>
+        )}
+
+        {!loading &&
+          !error &&
+          forecast.length > 0 && (
+            <canvas ref={canvasRef} />
+          )}
+      </ChartWrapper>
+    </ForecastSection>
+  );
+}
