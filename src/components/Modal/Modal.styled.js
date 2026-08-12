@@ -139,7 +139,6 @@ export const LoginText = styled.p`
   color: #888888;
   font-size: 14px;
   text-align: center;
-
   
 `;
 
