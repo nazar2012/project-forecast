@@ -1,4 +1,5 @@
-import { FiUser } from "react-icons/fi";
+import { useState } from "react";
+
 import logo from "../../assets/logo.png";
 import userIcon from "../../assets/user.png";
 
@@ -11,6 +12,12 @@ import {
   SignUpButton,
   UserIcon,
   UserAvatar,
+  MobileMenuButton,
+  MobileNavigation,
+  MobileLinks,
+  MobileActions,
+  MobileUserIcon,
+  MobileSignUpButton,
 } from "./Header.styled";
 
 export default function Header({
@@ -19,6 +26,8 @@ export default function Header({
   onSignUp,
   onProfile,
 }) {
+  const [menu, setMenu] = useState(false);
+
   return (
     <HeaderWrapper>
       <Logo href="/">
@@ -48,15 +57,48 @@ export default function Header({
           aria-label="Open profile"
         >
           {avatar ? (
-            <UserAvatar
-              src={avatar}
-              alt="Profile"
-            />
+            <UserAvatar src={avatar} alt="Profile" />
           ) : (
             <img src={userIcon} alt="Profile" />
           )}
         </UserIcon>
       </Actions>
+
+      <MobileMenuButton
+        type="button"
+        onClick={() => setMenu((prev) => !prev)}
+      >
+        Menu
+        {menu ? " →" : " ↓"}
+      </MobileMenuButton>
+      {menu && (
+        <MobileNavigation>
+          <MobileLinks>
+            <NavLink href="#about">Who we are</NavLink>
+            <NavLink href="#contacts">Contacts</NavLink>
+            <NavLink href="#menu">Menu</NavLink>
+          </MobileLinks>
+
+          <MobileActions>
+            <MobileUserIcon onClick={onProfile}>
+              {avatar ? (
+                <UserAvatar src={avatar} alt="Profile" />
+              ) : (
+                <img src={userIcon} alt="Profile" />
+              )}
+            </MobileUserIcon>
+
+            {!user && (
+              <MobileSignUpButton
+                type="button"
+                onClick={onSignUp}
+              >
+                Sign Up
+              </MobileSignUpButton>
+            )}
+          </MobileActions>
+        </MobileNavigation>
+      )}
     </HeaderWrapper>
   );
 }
