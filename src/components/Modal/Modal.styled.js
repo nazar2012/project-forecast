@@ -4,34 +4,25 @@ export const Overlay = styled.div`
   position: fixed;
   inset: 0;
   z-index: 1000;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   padding: 16px;
   box-sizing: border-box;
-
   background: rgba(17, 17, 17, 0.45);
   backdrop-filter: blur(5px);
 `;
 
 export const ModalWrapper = styled.div`
   position: relative;
-
   width: 100%;
   max-width: 360px;
-
   padding: 30px;
-
   background: #ffffff;
   border: 1px solid #eeeeee;
   border-radius: 15px;
-
   box-sizing: border-box;
-
   box-shadow: 0 20px 55px rgba(0, 0, 0, 0.18);
-
   animation: modalAppear 0.2s ease;
 
   @keyframes modalAppear {
@@ -46,14 +37,12 @@ export const ModalWrapper = styled.div`
     }
   }
 
-  /* Планшет */
   @media screen and (min-width: 564px) {
     max-width: 450px;
     padding: 38px;
     border-radius: 17px;
   }
 
-  /* Десктоп */
   @media screen and (min-width: 1160px) {
     max-width: 500px;
     padding: 42px;
@@ -63,27 +52,19 @@ export const ModalWrapper = styled.div`
 
 export const CloseButton = styled.button`
   position: absolute;
-
   top: 11px;
   right: 11px;
-
   width: 30px;
   height: 30px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   padding: 0;
-
   border: none;
   border-radius: 50%;
-
   background: #f7f7f7;
   color: #333333;
-
   cursor: pointer;
-
   transition:
     background 0.2s ease,
     transform 0.2s ease;
@@ -95,7 +76,6 @@ export const CloseButton = styled.button`
   @media screen and (min-width: 564px) {
     top: 14px;
     right: 14px;
-
     width: 32px;
     height: 32px;
   }
@@ -103,7 +83,6 @@ export const CloseButton = styled.button`
   @media screen and (min-width: 1160px) {
     top: 16px;
     right: 16px;
-
     width: 34px;
     height: 34px;
   }
@@ -111,12 +90,9 @@ export const CloseButton = styled.button`
 
 export const Title = styled.h2`
   margin: 0 0 22px;
-
   color: #111111;
-
   font-size: 25px;
   font-weight: 800;
-
   letter-spacing: -0.5px;
   text-align: center;
 
@@ -148,21 +124,14 @@ export const Form = styled.form`
 export const Input = styled.input`
   width: 100%;
   height: 44px;
-
   padding: 0 14px;
-
   border: 1px solid #dddddd;
   border-radius: 8px;
-
   outline: none;
-
   background: #fafafa;
   color: #111111;
-
   font-size: 14px;
-
   box-sizing: border-box;
-
   transition:
     background 0.2s ease,
     border-color 0.2s ease,
@@ -175,7 +144,6 @@ export const Input = styled.input`
   &:focus {
     background: #ffffff;
     border-color: #ffb36c;
-
     box-shadow: 0 0 0 3px rgba(255, 179, 108, 0.15);
   }
 
@@ -194,22 +162,15 @@ export const Input = styled.input`
 export const SubmitButton = styled.button`
   width: 92px;
   height: 37px;
-
   margin: 4px auto 0;
-
   border: none;
   border-radius: 8px;
-
   background: #ffb36c;
   color: #111111;
-
   font-size: 14px;
   font-weight: 500;
-
   cursor: pointer;
-
   box-shadow: 0 5px 15px rgba(255, 179, 108, 0.25);
-
   transition:
     background 0.2s ease,
     transform 0.2s ease,
@@ -240,7 +201,6 @@ export const SubmitButton = styled.button`
 
 export const LoginText = styled.p`
   margin: 17px 0 0;
-
   color: #888888;
   font-size: 12px;
   text-align: center;
@@ -262,5 +222,52 @@ export const LoginLink = styled.a`
 
   &:hover {
     color: #ff9d4d;
+  }
+`;
+
+export const PasswordWrapper = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
+export const PasswordButton = styled.button`
+  position: absolute;
+  top: 50%;
+  right: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
+  padding: 0;
+
+  border: none;
+  background: transparent;
+
+  color: #777777;
+
+  cursor: pointer;
+
+  transform: translateY(-50%);
+
+  &:hover {
+    color: #111111;
+  }
+
+  svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  @media screen and (min-width: 564px) {
+    right: 14px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
   }
 `;

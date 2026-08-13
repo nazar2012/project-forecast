@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiX, FiCamera, FiEdit2, FiCheck } from "react-icons/fi";
+import { FiX, FiCamera, FiEdit2, FiCheck, FiEye, FiEyeOff } from "react-icons/fi";
 import { toast } from "react-toastify";
 
 import {
@@ -17,6 +17,8 @@ import {
   Label,
   Value,
   EditInput,
+  PasswordWrapper,
+  PasswordButton,
   EditButton,
   SaveButton,
   LogoutButton,
@@ -28,9 +30,8 @@ export default function Profile({
   onUserUpdate,
   onLogout,
 }) {
-  const savedUser =
-    JSON.parse(localStorage.getItem("weatherUser")) || {};
-
+  const savedUser = JSON.parse(localStorage.getItem("weatherUser")) || {};
+  const [showPassword, setShowPassword] = useState(false);
   const [user, setUser] = useState(savedUser);
 
   const [avatar, setAvatar] = useState(
@@ -215,13 +216,23 @@ export default function Profile({
             <Label>Password</Label>
 
             {editing ? (
-              <EditInput
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Password"
-              />
+              <PasswordWrapper>
+                <EditInput
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Password"
+                />
+
+                <PasswordButton
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <FiEyeOff /> : <FiEye />}
+                </PasswordButton>
+              </PasswordWrapper>
             ) : (
               <Value>
                 {user.password

@@ -29,6 +29,7 @@ const API_KEY =
 
 export default function MoreWeather({
   city,
+  unit = "C",
   onClose,
 }) {
   const [weather, setWeather] =
@@ -112,7 +113,6 @@ export default function MoreWeather({
             currentWeather.main.feels_like,
 
           minTemp,
-
           maxTemp,
 
           humidity:
@@ -142,9 +142,17 @@ export default function MoreWeather({
     loadWeather();
   }, [city]);
 
-  const getTemperatureIcon = (
-    temperature
-  ) => {
+  const convertTemperature = (temperature) => {
+    if (unit === "F") {
+      return (
+        (temperature * 9) / 5 + 32
+      );
+    }
+
+    return temperature;
+  };
+
+  const getTemperatureIcon = (temperature) => {
     if (temperature < 16) {
       return cold;
     }
@@ -200,8 +208,10 @@ export default function MoreWeather({
               </MoreWeatherLabel>
 
               <MoreWeatherValue>
-                {weather.feelsLike.toFixed(1)}
-                °C
+                {convertTemperature(
+                  weather.feelsLike
+                ).toFixed(1)}
+                °{unit}
               </MoreWeatherValue>
 
               <MoreWeatherIcon>
@@ -216,21 +226,25 @@ export default function MoreWeather({
 
             <MoreWeatherCard>
               <MoreWeatherLabel>
-                Min °C
+                Min °{unit}
               </MoreWeatherLabel>
 
               <MoreWeatherValue>
-                {weather.minTemp.toFixed(1)}
-                °C
+                {convertTemperature(
+                  weather.minTemp
+                ).toFixed(1)}
+                °{unit}
               </MoreWeatherValue>
 
               <MoreWeatherLabel>
-                Max °C
+                Max °{unit}
               </MoreWeatherLabel>
 
               <MoreWeatherValue>
-                {weather.maxTemp.toFixed(1)}
-                °C
+                {convertTemperature(
+                  weather.maxTemp
+                ).toFixed(1)}
+                °{unit}
               </MoreWeatherValue>
             </MoreWeatherCard>
 
@@ -257,7 +271,7 @@ export default function MoreWeather({
               </MoreWeatherLabel>
 
               <MoreWeatherValue>
-                {weather.pressure} Pa
+                {weather.pressure} hPa
               </MoreWeatherValue>
 
               <MoreWeatherIcon>
@@ -274,8 +288,7 @@ export default function MoreWeather({
               </MoreWeatherLabel>
 
               <MoreWeatherValue>
-                {weather.windSpeed.toFixed(2)}
-                {" "}
+                {weather.windSpeed.toFixed(2)}{" "}
                 m/s
               </MoreWeatherValue>
 
@@ -293,12 +306,10 @@ export default function MoreWeather({
               </MoreWeatherLabel>
 
               <MoreWeatherValue>
-                {weather.visibility >=
-                10000
+                {weather.visibility >= 10000
                   ? "Unlimited"
                   : `${(
-                      weather.visibility /
-                      1000
+                      weather.visibility / 1000
                     ).toFixed(1)} km`}
               </MoreWeatherValue>
 

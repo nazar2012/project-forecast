@@ -12,21 +12,31 @@ export const FooterContainer = styled.div`
   max-width: 1440px;
   min-height: 190px;
   margin: 0 auto;
-  padding: 42px 70px;
+  padding: 10px 70px;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
-  gap: 80px;
+  gap: 30px;
 
-  @media (max-width: 1000px) {
+  @media screen and (min-width: 564px) {
     padding: 40px 50px;
+
     gap: 50px;
   }
 
-  @media (max-width: 700px) {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 40px 30px;
-    gap: 35px;
+  @media screen and (min-width: 1160px) {
+    padding: 10px 70px;
+    gap: 30px;
+  }
+
+  @media screen and (max-width: 563px) {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    align-items: center;
+    column-gap: 35px;
+    row-gap: 30px;
+    padding: 35px 30px;
   }
 `;
 
@@ -34,6 +44,12 @@ export const LogoWrapper = styled.div`
   display: flex;
   align-items: center;
   min-width: 180px;
+
+  @media screen and (max-width: 563px) {
+    min-width: 0;
+    grid-column: 1;
+    grid-row: 1;
+  }
 `;
 
 export const Logo = styled.img`
@@ -41,12 +57,31 @@ export const Logo = styled.img`
   height: 56px;
   object-fit: contain;
   display: block;
+
+  @media screen and (max-width: 563px) {
+    width: 75px;
+
+    height: 52px;
+  }
 `;
 
 export const InfoBlock = styled.div`
   display: flex;
   flex-direction: column;
   min-width: 170px;
+  @media screen and (max-width: 563px) {
+    min-width: 0;
+  }
+
+  &.contacts {
+    @media screen and (max-width: 563px) {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      align-items: center;
+      justify-self: center;
+      text-align: center;
+    }
+  }
 `;
 
 export const Title = styled.h3`
@@ -55,6 +90,10 @@ export const Title = styled.h3`
   font-size: 16px;
   font-weight: 500;
   color: #111111;
+
+  @media screen and (max-width: 563px) {
+    font-size: 15px;
+  }
 `;
 
 export const Address = styled.p`
@@ -84,6 +123,10 @@ export const SocialLink = styled.a`
     transform 0.2s ease,
     background 0.2s ease,
     box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+  }
 `;
 
 export const SocialIcon = styled.img`

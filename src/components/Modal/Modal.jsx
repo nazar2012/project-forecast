@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { useFormik } from "formik";
-import { FiX } from "react-icons/fi";
 import { toast } from "react-toastify";
+import { FiX, FiEye, FiEyeOff } from "react-icons/fi";
 
 import {
   Overlay,
@@ -12,9 +13,15 @@ import {
   SubmitButton,
   LoginText,
   LoginLink,
+  PasswordWrapper,
+  PasswordButton,
 } from "./Modal.styled";
 
+
 export default function Modal({ onClose, onSubmit }) {
+
+  const [showPassword, setShowPassword] = useState(false);
+
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -23,6 +30,11 @@ export default function Modal({ onClose, onSubmit }) {
     },
 
     onSubmit: (values, { resetForm }) => {
+      if (values.password.length < 8) {
+        toast.error("Password must contain at least 8 characters!");
+        return;
+      }
+
       if (onSubmit) {
         onSubmit(values);
       } else {
@@ -76,14 +88,25 @@ export default function Modal({ onClose, onSubmit }) {
             required
           />
 
-          <Input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formik.values.password}
-            onChange={formik.handleChange}
-            required
-          />
+          <PasswordWrapper>
+            <Input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              minLength={8}
+              required
+            />
+
+            <PasswordButton
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <FiEyeOff /> : <FiEye />}
+            </PasswordButton>
+          </PasswordWrapper>
 
           <SubmitButton type="submit">
             Sign up

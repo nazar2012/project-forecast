@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+
 import {
   Chart,
   LineController,
@@ -29,10 +30,12 @@ Chart.register(
   Tooltip
 );
 
-const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
+const API_KEY =
+  import.meta.env.VITE_OPENWEATHER_API_KEY;
 
 export default function HourlyForecast({
   city,
+  unit = "C",
   onClose,
 }) {
   const canvasRef = useRef(null);
@@ -109,9 +112,17 @@ export default function HourlyForecast({
       });
     });
 
-    const temperatures = forecast.map((item) =>
-      Math.round(item.main.temp)
-    );
+    const temperatures = forecast.map((item) => {
+      const temperature = item.main.temp;
+
+      if (unit === "F") {
+        return Math.round(
+          (temperature * 9) / 5 + 32
+        );
+      }
+
+      return Math.round(temperature);
+    });
 
     const ctx =
       canvasRef.current.getContext("2d");
@@ -139,7 +150,6 @@ export default function HourlyForecast({
             pointHoverRadius: 5,
 
             tension: 0.4,
-
             fill: true,
           },
         ],
@@ -166,16 +176,13 @@ export default function HourlyForecast({
 
           tooltip: {
             enabled: true,
-
             displayColors: false,
 
             backgroundColor: "#111111",
-
             titleColor: "#ffffff",
             bodyColor: "#ffffff",
 
             padding: 10,
-
             cornerRadius: 8,
 
             callbacks: {
@@ -184,7 +191,7 @@ export default function HourlyForecast({
               },
 
               label: (context) => {
-                return `${context.raw}°C`;
+                return `${context.raw}°${unit}`;
               },
             },
           },
@@ -230,7 +237,7 @@ export default function HourlyForecast({
               },
 
               callback: (value) =>
-                `${value}°`,
+                `${value}°${unit}`,
             },
           },
         },
@@ -243,7 +250,12 @@ export default function HourlyForecast({
         chartRef.current = null;
       }
     };
-  }, [forecast, loading, error]);
+  }, [
+    forecast,
+    loading,
+    error,
+    unit,
+  ]);
 
   return (
     <ForecastSection>

@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 
 import {
   NatureSection,
+  NatureHeader,
   NatureTitle,
+  PauseButton,
   Slider,
   Slide,
   Loading,
@@ -23,17 +25,32 @@ export default function NatureSlider() {
   const [error, setError] =
     useState(false);
 
+  const [isPaused, setIsPaused] =
+    useState(false);
+
   useEffect(() => {
     const loadNatureImages = async () => {
       try {
         setLoading(true);
         setError(false);
-        const url = `https://pixabay.com/api/?key=${API_KEY}&q=beautiful+nature&image_type=photo&orientation=horizontal&per_page=7&safesearch=true`;
+
+        const url =
+          `https://pixabay.com/api/?key=${API_KEY}` +
+          `&q=beautiful+nature` +
+          `&image_type=photo` +
+          `&orientation=horizontal` +
+          `&per_page=7` +
+          `&safesearch=true`;
+
         const response = await fetch(url);
-        const data = await response.json();
+
+        const data =
+          await response.json();
+
         if (!response.ok) {
           throw new Error(
-            data.error || `HTTP error: ${response.status}`
+            data.error ||
+              `HTTP error: ${response.status}`
           );
         }
 
@@ -56,6 +73,13 @@ export default function NatureSlider() {
               "Beautiful nature",
           }))
         );
+      } catch (error) {
+        console.error(
+          "Ошибка загрузки изображений:",
+          error
+        );
+
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -65,7 +89,10 @@ export default function NatureSlider() {
   }, []);
 
   useEffect(() => {
-    if (images.length === 0) {
+    if (
+      images.length === 0 ||
+      isPaused
+    ) {
       return;
     }
 
@@ -75,10 +102,11 @@ export default function NatureSlider() {
           ? 0
           : current + 1
       );
-    }, 4000);
+    }, 2000);
 
-    return () => clearInterval(timer);
-  }, [images]);
+    return () =>
+      clearInterval(timer);
+  }, [images, isPaused]);
 
   const getPosition = (index) => {
     let difference =
@@ -104,9 +132,11 @@ export default function NatureSlider() {
   if (loading) {
     return (
       <NatureSection>
-        <NatureTitle>
-          Beautiful nature
-        </NatureTitle>
+        <NatureHeader>
+          <NatureTitle>
+            Beautiful nature
+          </NatureTitle>
+        </NatureHeader>
 
         <Loading>
           Loading...
@@ -118,9 +148,11 @@ export default function NatureSlider() {
   if (error) {
     return (
       <NatureSection>
-        <NatureTitle>
-          Beautiful nature
-        </NatureTitle>
+        <NatureHeader>
+          <NatureTitle>
+            Beautiful nature
+          </NatureTitle>
+        </NatureHeader>
 
         <ErrorMessage>
           Failed to load images.
@@ -131,30 +163,49 @@ export default function NatureSlider() {
 
   return (
     <NatureSection>
-      <NatureTitle>
-        Beautiful nature
-      </NatureTitle>
+      <NatureHeader>
+        <NatureTitle>
+          Beautiful nature
+        </NatureTitle>
+
+        <PauseButton
+          type="button"
+          onClick={() =>
+            setIsPaused(
+              (prev) => !prev
+            )
+          }
+        >
+          {isPaused
+            ? "▶ Continue"
+            : "Ⅱ Pause"}
+        </PauseButton>
+      </NatureHeader>
 
       <Slider>
-        {images.map((image, index) => {
-          const position =
-            getPosition(index);
+        {images.map(
+          (image, index) => {
+            const position =
+              getPosition(index);
 
-          return (
-            <Slide
-              key={image.id}
-              $position={position}
-              onClick={() =>
-                setActiveIndex(index)
-              }
-            >
-              <img
-                src={image.url}
-                alt={image.alt}
-              />
-            </Slide>
-          );
-        })}
+            return (
+              <Slide
+                key={image.id}
+                $position={position}
+                onClick={() =>
+                  setActiveIndex(
+                    index
+                  )
+                }
+              >
+                <img
+                  src={image.url}
+                  alt={image.alt}
+                />
+              </Slide>
+            );
+          }
+        )}
       </Slider>
     </NatureSection>
   );

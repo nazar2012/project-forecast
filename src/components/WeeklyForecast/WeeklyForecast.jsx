@@ -22,6 +22,7 @@ const API_KEY =
 
 export default function WeeklyForecast({
   city,
+  unit = "C",
   onClose,
 }) {
   const [forecast, setForecast] = useState([]);
@@ -33,9 +34,11 @@ export default function WeeklyForecast({
       try {
         setLoading(true);
         setError(false);
-        const oneCallResponse = await fetch(
-          `https://api.openweathermap.org/data/3.0/onecall?lat=${city.latitude}&lon=${city.longitude}&exclude=current,minutely,hourly,alerts&appid=${API_KEY}&units=metric`
-        );
+
+        const oneCallResponse =
+          await fetch(
+            `https://api.openweathermap.org/data/3.0/onecall?lat=${city.latitude}&lon=${city.longitude}&exclude=current,minutely,hourly,alerts&appid=${API_KEY}&units=metric`
+          );
 
         if (oneCallResponse.ok) {
           const data =
@@ -59,13 +62,8 @@ export default function WeeklyForecast({
                   item.weather?.[0]
                     ?.description || "",
 
-                maxTemp: Math.round(
-                  item.temp.max
-                ),
-
-                minTemp: Math.round(
-                  item.temp.min
-                ),
+                maxTemp: item.temp.max,
+                minTemp: item.temp.min,
               }));
 
             setForecast(days);
@@ -74,8 +72,6 @@ export default function WeeklyForecast({
           }
         }
 
-        // Если One Call недоступен,
-        // используем обычный forecast
         const forecastResponse =
           await fetch(
             `https://api.openweathermap.org/data/2.5/forecast?lat=${city.latitude}&lon=${city.longitude}&appid=${API_KEY}&units=metric`
@@ -99,7 +95,6 @@ export default function WeeklyForecast({
           );
         }
 
-        // Группируем прогнозы по дням
         const groupedDays = {};
 
         data.list.forEach((item) => {
@@ -148,12 +143,12 @@ export default function WeeklyForecast({
                 middle.weather?.[0]
                   ?.description || "",
 
-              maxTemp: Math.round(
-                Math.max(...temperatures)
+              maxTemp: Math.max(
+                ...temperatures
               ),
 
-              minTemp: Math.round(
-                Math.min(...temperatures)
+              minTemp: Math.min(
+                ...temperatures
               ),
             };
           });
@@ -174,14 +169,26 @@ export default function WeeklyForecast({
     loadWeeklyForecast();
   }, [city]);
 
-  // Полное название дня
+  const convertTemperature = (temperature) => {
+    if (unit === "F") {
+      return Math.round(
+        (temperature * 9) / 5 + 32
+      );
+    }
+
+    return Math.round(temperature);
+  };
+
   const formatDate = (date) => {
-  return date.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  });
-};
+    return date.toLocaleDateString(
+      "en-US",
+      {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      }
+    );
+  };
 
   return (
     <WeeklySection>
@@ -227,23 +234,25 @@ export default function WeeklyForecast({
                   key={`${day.date.getTime()}-${index}`}
                 >
                   <ForecastDate>
-                    {formatDate(
-                      day.date
-                    )}
+                    {formatDate(day.date)}
                   </ForecastDate>
 
                   <ForecastWeather>
                     <WeatherIcon
                       src={`https://openweathermap.org/img/wn/${day.icon}@2x.png`}
-                      alt={
-                        day.description
-                      }
+                      alt={day.description}
                     />
 
                     <Temperature>
-                      {day.maxTemp}°
+                      {convertTemperature(
+                        day.maxTemp
+                      )}
+                      °
                       /
-                      {day.minTemp}°C
+                      {convertTemperature(
+                        day.minTemp
+                      )}
+                      °{unit}
                     </Temperature>
                   </ForecastWeather>
 

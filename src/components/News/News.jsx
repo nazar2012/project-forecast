@@ -5,8 +5,9 @@ import {
   NewsSection,
   NewsContainer,
   NewsContent,
-  NewsLabel,
   NewsTitle,
+  CategoryButtons,
+  CategoryButton,
   NewsCards,
   NewsCard,
   NewsCardImage,
@@ -17,30 +18,152 @@ import {
 const API_URL =
   "https://reactproject-gsav.onrender.com/api/news";
 
+const categories = [
+  "All",
+  "Nature",
+  "Weather",
+  "Animals",
+  "Science",
+];
+
+const getCategoryText = (article) => {
+  return `
+    ${article.title || ""}
+    ${article.description || ""}
+    ${article.content || ""}
+  `.toLowerCase();
+};
+
+const matchesCategory = (article, category) => {
+  if (category === "All") {
+    return true;
+  }
+
+  const text = getCategoryText(article);
+
+  const keywords = {
+    Nature: [
+      "nature",
+      "forest",
+      "tree",
+      "trees",
+      "plant",
+      "plants",
+      "flower",
+      "flowers",
+      "ocean",
+      "sea",
+      "river",
+      "mountain",
+      "earth",
+      "wildlife",
+      "landscape",
+      "environment",
+      "nature",
+    ],
+
+    Weather: [
+      "weather",
+      "rain",
+      "rainy",
+      "storm",
+      "snow",
+      "snowy",
+      "wind",
+      "windy",
+      "temperature",
+      "climate",
+      "hurricane",
+      "tornado",
+      "flood",
+      "heat",
+      "cold",
+      "sunny",
+      "cloud",
+      "cloudy",
+    ],
+
+    Animals: [
+      "animal",
+      "animals",
+      "dog",
+      "dogs",
+      "cat",
+      "cats",
+      "bird",
+      "birds",
+      "lion",
+      "tiger",
+      "bear",
+      "elephant",
+      "fish",
+      "whale",
+      "dolphin",
+      "horse",
+      "pet",
+      "pets",
+      "wildlife",
+    ],
+
+    Science: [
+      "science",
+      "scientist",
+      "scientists",
+      "research",
+      "researchers",
+      "study",
+      "space",
+      "nasa",
+      "planet",
+      "planets",
+      "technology",
+      "technology",
+      "experiment",
+      "discovery",
+      "discover",
+      "physics",
+      "biology",
+      "chemistry",
+      "medical",
+    ],
+  };
+
+  return keywords[category].some((keyword) =>
+    text.includes(keyword)
+  );
+};
+
 export default function News() {
   const [articles, setArticles] = useState([]);
   const [page, setPage] = useState(1);
 
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadingMore, setLoadingMore] =
+    useState(false);
+
   const [error, setError] = useState(false);
 
-  const sectionRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const [activeCategory, setActiveCategory] =
+    useState("All");
 
-  // Анимация при появлении секции
+  const sectionRef = useRef(null);
+  const [isVisible, setIsVisible] =
+    useState(false);
+
+  // Анимация появления секции
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
+    const observer =
+      new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            observer.disconnect();
+          }
+        },
+        {
+          threshold: 0.25,
         }
-      },
-      {
-        threshold: 0.25,
-      }
-    );
+      );
 
     if (sectionRef.current) {
       observer.observe(sectionRef.current);
@@ -50,7 +173,9 @@ export default function News() {
   }, []);
 
   // Загрузка новостей
-  const loadNews = async (pageNumber = 1) => {
+  const loadNews = async (
+    pageNumber = 1
+  ) => {
     try {
       if (pageNumber === 1) {
         setLoading(true);
@@ -65,7 +190,9 @@ export default function News() {
       );
 
       if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status}`);
+        throw new Error(
+          `HTTP error: ${response.status}`
+        );
       }
 
       const data = await response.json();
@@ -75,21 +202,34 @@ export default function News() {
         !Array.isArray(data.articles) ||
         data.articles.length === 0
       ) {
-        throw new Error("Новости не найдены");
+        throw new Error(
+          "Новости не найдены"
+        );
       }
 
-      setArticles((previousArticles) => {
-        const existingUrls = new Set(
-          previousArticles.map((article) => article.url)
-        );
+      setArticles(
+        (previousArticles) => {
+          const existingUrls = new Set(
+            previousArticles.map(
+              (article) => article.url
+            )
+          );
 
-        const newArticles = data.articles.filter(
-          (article) =>
-            article.url && !existingUrls.has(article.url)
-        );
+          const newArticles =
+            data.articles.filter(
+              (article) =>
+                article.url &&
+                !existingUrls.has(
+                  article.url
+                )
+            );
 
-        return [...previousArticles, ...newArticles];
-      });
+          return [
+            ...previousArticles,
+            ...newArticles,
+          ];
+        }
+      );
 
       setPage(pageNumber);
     } catch (error) {
@@ -112,9 +252,20 @@ export default function News() {
     loadNews(1);
   }, []);
 
-  // See more
+  // Фильтрация новостей
+  const filteredArticles =
+    articles.filter((article) =>
+      matchesCategory(
+        article,
+        activeCategory
+      )
+    );
+
+  // Следующая страница
   const handleNext = async () => {
-    if (loadingMore) return;
+    if (loadingMore) {
+      return;
+    }
 
     const nextPage = page + 1;
 
@@ -138,28 +289,35 @@ export default function News() {
         !Array.isArray(data.articles) ||
         data.articles.length === 0
       ) {
-        console.log("Больше новостей нет");
+        console.log(
+          "Больше новостей нет"
+        );
         return;
       }
 
-      setArticles((previousArticles) => {
-        const existingUrls = new Set(
-          previousArticles.map(
-            (article) => article.url
-          )
-        );
+      setArticles(
+        (previousArticles) => {
+          const existingUrls = new Set(
+            previousArticles.map(
+              (article) => article.url
+            )
+          );
 
-        const newArticles = data.articles.filter(
-          (article) =>
-            article.url &&
-            !existingUrls.has(article.url)
-        );
+          const newArticles =
+            data.articles.filter(
+              (article) =>
+                article.url &&
+                !existingUrls.has(
+                  article.url
+                )
+            );
 
-        return [
-          ...previousArticles,
-          ...newArticles,
-        ];
-      });
+          return [
+            ...previousArticles,
+            ...newArticles,
+          ];
+        }
+      );
 
       setPage(nextPage);
     } catch (error) {
@@ -172,16 +330,50 @@ export default function News() {
     }
   };
 
+  const handleCategoryChange = (
+    category
+  ) => {
+    setActiveCategory(category);
+  };
+
   return (
     <NewsSection ref={sectionRef}>
       <NewsContainer>
         <NewsContent
-          className={isVisible ? "visible" : ""}
+          className={
+            isVisible ? "visible" : ""
+          }
         >
-          <NewsLabel>NEWS</NewsLabel>
+          <NewsTitle>
+            News
+          </NewsTitle>
+
+          <CategoryButtons>
+            {categories.map(
+              (category) => (
+                <CategoryButton
+                  key={category}
+                  type="button"
+                  $active={
+                    activeCategory ===
+                    category
+                  }
+                  onClick={() =>
+                    handleCategoryChange(
+                      category
+                    )
+                  }
+                >
+                  {category}
+                </CategoryButton>
+              )
+            )}
+          </CategoryButtons>
 
           {loading ? (
-            <NewsTitle>Loading...</NewsTitle>
+            <NewsTitle>
+              Loading...
+            </NewsTitle>
           ) : error ? (
             <>
               <NewsTitle>
@@ -190,31 +382,61 @@ export default function News() {
 
               <NewsButton
                 type="button"
-                onClick={() => loadNews(1)}
+                onClick={() =>
+                  loadNews(1)
+                }
               >
                 Try again
                 <FiArrowRight />
               </NewsButton>
             </>
-          ) : (
+          ) : filteredArticles.length ===
+            0 ? (
             <>
               <NewsTitle>
-                Interacting with our pets
+                No news in this category
               </NewsTitle>
 
+              <NewsButton
+                type="button"
+                onClick={() =>
+                  setActiveCategory(
+                    "All"
+                  )
+                }
+              >
+                Show all
+                <FiArrowRight />
+              </NewsButton>
+            </>
+          ) : (
+            <>
               <NewsCards>
-                {articles.map((article) => (
-                  <NewsCard key={article.url}>
-                    <NewsCardImage
-                      src={article.urlToImage}
-                      alt={article.title || "News"}
-                    />
+                {filteredArticles.map(
+                  (article) => (
+                    <NewsCard
+                      key={article.url}
+                    >
+                      <NewsCardImage
+                        src={
+                          article.urlToImage
+                        }
+                        alt={
+                          article.title ||
+                          "News"
+                        }
+                        onError={(event) => {
+                          event.currentTarget.style.display =
+                            "none";
+                        }}
+                      />
 
-                    <NewsCardTitle>
-                      {article.title}
-                    </NewsCardTitle>
-                  </NewsCard>
-                ))}
+                      <NewsCardTitle>
+                        {article.title}
+                      </NewsCardTitle>
+                    </NewsCard>
+                  )
+                )}
               </NewsCards>
 
               <NewsButton
@@ -225,6 +447,8 @@ export default function News() {
                 {loadingMore
                   ? "Loading..."
                   : "See more"}
+
+                <FiArrowRight />
               </NewsButton>
             </>
           )}

@@ -11,26 +11,26 @@ import Profile from "./components/Profile/Profile";
 
 import { GlobalStyle } from "./GlobalStyle";
 import { AppWrapper } from "./App.styled";
+// import WeatherTest from "./components/WeatherTest/WeatherTest";
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [avatar, setAvatar] = useState(null);
-
   const [cities, setCities] = useState([]);
   const [favorites, setFavorites] = useState([]);
 
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [temperatureUnit, setTemperatureUnit] = useState(() => {
+    return localStorage.getItem("temperatureUnit") || "C";
+  });
 
+  const [isLoaded, setIsLoaded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-  // Загружаем данные из localStorage
   useEffect(() => {
     const savedUser = localStorage.getItem("weatherUser");
     const savedAvatar = localStorage.getItem("weatherAvatar");
-
-    const savedFavorites =
-      localStorage.getItem("weatherFavorites");
+    const savedFavorites = localStorage.getItem("weatherFavorites");
 
     if (savedUser) {
       setUser(JSON.parse(savedUser));
@@ -41,19 +41,15 @@ export default function App() {
     }
 
     if (savedFavorites) {
-      const parsedFavorites =
-        JSON.parse(savedFavorites);
+      const parsedFavorites = JSON.parse(savedFavorites);
 
       setFavorites(parsedFavorites);
-
-      // После перезагрузки показываем только избранные города
       setCities(parsedFavorites);
     }
 
     setIsLoaded(true);
   }, []);
 
-  // Сохраняем избранные города
   useEffect(() => {
     if (!isLoaded) return;
 
@@ -63,7 +59,6 @@ export default function App() {
     );
   }, [favorites, isLoaded]);
 
-  // Регистрация
   const handleSignUp = (userData) => {
     localStorage.setItem(
       "weatherUser",
@@ -74,7 +69,6 @@ export default function App() {
     setIsModalOpen(false);
   };
 
-  // Изменение данных профиля
   const handleUserUpdate = (updatedUser) => {
     localStorage.setItem(
       "weatherUser",
@@ -82,10 +76,8 @@ export default function App() {
     );
 
     setUser(updatedUser);
-
   };
 
-  // Изменение аватарки
   const handleAvatarChange = (newAvatar) => {
     localStorage.setItem(
       "weatherAvatar",
@@ -93,32 +85,25 @@ export default function App() {
     );
 
     setAvatar(newAvatar);
-
   };
 
-  // Выход
   const handleLogout = () => {
     localStorage.removeItem("weatherUser");
     localStorage.removeItem("weatherAvatar");
 
     setUser(null);
     setAvatar(null);
-
     setIsProfileOpen(false);
-
   };
 
-  // Открытие регистрации
   const openSignUp = () => {
     setIsModalOpen(true);
   };
 
-  // Закрытие регистрации
   const closeModal = () => {
     setIsModalOpen(false);
   };
 
-  // Открытие профиля
   const openProfile = () => {
     if (user) {
       setIsProfileOpen(true);
@@ -127,12 +112,23 @@ export default function App() {
     }
   };
 
-  // Закрытие профиля
   const closeProfile = () => {
     setIsProfileOpen(false);
   };
 
-  // Добавление города
+  const handleTemperatureUnitChange = () => {
+    setTemperatureUnit((prevUnit) => {
+      const newUnit = prevUnit === "C" ? "F" : "C";
+
+      localStorage.setItem(
+        "temperatureUnit",
+        newUnit
+      );
+
+      return newUnit;
+    });
+  };
+
   const handleCityAdd = (newCity) => {
     setCities((prevCities) => {
       const alreadyExists = prevCities.some(
@@ -142,11 +138,11 @@ export default function App() {
       if (alreadyExists) {
         return prevCities;
       }
+
       return [...prevCities, newCity];
     });
   };
 
-  // Удаление города
   const handleDeleteCity = (cityId) => {
     setCities((prevCities) =>
       prevCities.filter(
@@ -161,14 +157,12 @@ export default function App() {
     );
   };
 
-  // Добавление / удаление из избранного
   const handleFavorite = (cityId) => {
     setFavorites((prevFavorites) => {
       const isFavorite = prevFavorites.some(
         (city) => city.id === cityId
       );
 
-      // Если город уже в избранном — удаляем
       if (isFavorite) {
         const updatedFavorites =
           prevFavorites.filter(
@@ -183,7 +177,6 @@ export default function App() {
         return updatedFavorites;
       }
 
-      // Находим город среди текущих карточек
       const city = cities.find(
         (city) => city.id === cityId
       );
@@ -192,7 +185,6 @@ export default function App() {
         return prevFavorites;
       }
 
-      // Добавляем полный объект города в избранное
       const updatedFavorites = [
         ...prevFavorites,
         city,
@@ -207,7 +199,6 @@ export default function App() {
     });
   };
 
-  // Обновление погоды
   const handleRefresh = async (city) => {
     try {
       const response = await fetch(
@@ -224,18 +215,12 @@ export default function App() {
 
       const updatedCity = {
         ...city,
-
         temperature: weather.main.temp,
-
         icon: weather.weather[0].icon,
-
-        description:
-          weather.weather[0].description,
-
+        description: weather.weather[0].description,
         timezone: weather.timezone,
       };
 
-      // Обновляем карточку
       setCities((prevCities) =>
         prevCities.map((item) =>
           item.id === city.id
@@ -244,8 +229,6 @@ export default function App() {
         )
       );
 
-      // Если город избранный —
-      // обновляем его данные в избранном
       setFavorites((prevFavorites) =>
         prevFavorites.map((item) =>
           item.id === city.id
@@ -253,13 +236,11 @@ export default function App() {
             : item
         )
       );
-
     } catch (error) {
       console.error(
         "Помилка оновлення погоди:",
         error
       );
-
     }
   };
 
@@ -280,6 +261,10 @@ export default function App() {
         <WeatherList
           cities={cities}
           favorites={favorites}
+          temperatureUnit={temperatureUnit}
+          onTemperatureUnitChange={
+            handleTemperatureUnitChange
+          }
           onRefresh={handleRefresh}
           onFavorite={handleFavorite}
           onDelete={handleDeleteCity}

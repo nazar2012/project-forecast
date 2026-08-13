@@ -36,7 +36,7 @@ export default function Footer() {
           </Address>
         </InfoBlock>
 
-        <InfoBlock>
+        <InfoBlock className="contacts">
           <Title>Contact us</Title>
 
           <Socials>
@@ -45,7 +45,10 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <SocialIcon src={instagram} alt="Instagram" />
+              <SocialIcon
+                src={instagram}
+                alt="Instagram"
+              />
             </SocialLink>
 
             <SocialLink
@@ -53,7 +56,10 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <SocialIcon src={facebook} alt="Facebook" />
+              <SocialIcon
+                src={facebook}
+                alt="Facebook"
+              />
             </SocialLink>
 
             <SocialLink
@@ -61,12 +67,14 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <SocialIcon src={whatsapp} alt="WhatsApp" />
+              <SocialIcon
+                src={whatsapp}
+                alt="WhatsApp"
+              />
             </SocialLink>
           </Socials>
         </InfoBlock>
       </FooterContainer>
-
     </FooterWrapper>
   );
 }

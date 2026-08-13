@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FiSearch } from "react-icons/fi";
+import { FiSearch, FiMapPin } from "react-icons/fi";
 
 import heroBg from "../../assets/weather.png";
 
@@ -12,50 +12,115 @@ import {
   Description,
   Divider,
   DateBlock,
+  SearchContainer,
   SearchWrapper,
   SearchInput,
   SearchButton,
+  Suggestions,
+  Suggestion,
+  SuggestionText,
+  SuggestionCity,
+  SuggestionCountry,
+  SuggestionLoading,
 } from "./Hero.styled";
 
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 
-// console.log("API KEY exists:", Boolean(API_KEY));
-
 export default function Hero({ onCityAdd }) {
   const [query, setQuery] = useState("");
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [suggestions, setSuggestions] = useState([]);
+  const [loadingSuggestions, setLoadingSuggestions] =
+    useState(false);
+
+  const [currentTime, setCurrentTime] = useState(
+    new Date()
+  );
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
+
     return () => clearInterval(timer);
   }, []);
 
-  const searchLocation = async () => {
+  useEffect(() => {
     const value = query.trim();
+
+    if (value.length < 2) {
+      setSuggestions([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        setLoadingSuggestions(true);
+
+        const response = await fetch(
+          `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(
+            value
+          )}&limit=5&appid=${API_KEY}`
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            `HTTP error: ${response.status}`
+          );
+        }
+
+        const data = await response.json();
+
+        setSuggestions(data);
+      } catch (error) {
+        console.error(
+          "Помилка отримання підказок:",
+          error
+        );
+
+        setSuggestions([]);
+      } finally {
+        setLoadingSuggestions(false);
+      }
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  const getLocation = async (value) => {
+    const response = await fetch(
+      `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(
+        value
+      )}&limit=1&appid=${API_KEY}`
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `HTTP error: ${response.status}`
+      );
+    }
+
+    const data = await response.json();
+
+    if (data.length === 0) {
+      throw new Error("Місто не знайдено");
+    }
+
+    return data[0];
+  };
+
+  const searchLocation = async (selectedLocation = null) => {
+    const value = selectedLocation
+      ? selectedLocation.name
+      : query.trim();
+
     if (!value) {
-      console.log("Введіть назву місста для пошуку");
       return;
     }
 
     try {
-      const response = await fetch(
-        `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(
-          value
-        )}&limit=1&appid=${API_KEY}`
-      );
+      const location =
+        selectedLocation || (await getLocation(value));
 
-      if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (data.length === 0) {
-        console.log("Місто не знайдено");
-        return;
-      }
-
-      const location = data[0];
       const weatherResponse = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lon}&appid=${API_KEY}&units=metric`
       );
@@ -67,9 +132,10 @@ export default function Hero({ onCityAdd }) {
       }
 
       const weather = await weatherResponse.json();
+
       const cityData = {
         id: `${location.lat}-${location.lon}`,
-        name: value,
+        name: location.name,
         country: location.country,
         temperature: weather.main.temp,
         icon: weather.weather[0].icon,
@@ -84,28 +150,36 @@ export default function Hero({ onCityAdd }) {
       }
 
       setQuery("");
+      setSuggestions([]);
     } catch (error) {
       console.error("Помилка пошуку:", error);
     }
   };
 
+  const handleSuggestionClick = (location) => {
+    setQuery(location.name);
+    setSuggestions([]);
+
+    searchLocation(location);
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
+
     searchLocation();
   };
 
-  const currentDate = new Date();
-  const month = currentDate.toLocaleString("en-US", {
+  const month = currentTime.toLocaleString("en-US", {
     month: "long",
   });
 
-  const year = currentDate.getFullYear();
+  const year = currentTime.getFullYear();
 
-  const weekday = currentDate.toLocaleString("en-US", {
+  const weekday = currentTime.toLocaleString("en-US", {
     weekday: "long",
   });
 
-  const day = currentDate.getDate();
+  const day = currentTime.getDate();
 
   const getDaySuffix = (day) => {
     if (day >= 11 && day <= 13) {
@@ -124,10 +198,9 @@ export default function Hero({ onCityAdd }) {
     }
   };
 
-  const hours = String(currentTime.getHours()).padStart(
-    2,
-    "0"
-  );
+  const hours = String(
+    currentTime.getHours()
+  ).padStart(2, "0");
 
   const minutes = String(
     currentTime.getMinutes()
@@ -165,20 +238,61 @@ export default function Hero({ onCityAdd }) {
           </DateBlock>
         </Info>
 
-        <SearchWrapper onSubmit={handleSubmit}>
-          <SearchInput
-            type="text"
-            value={query}
-            onChange={(event) =>
-              setQuery(event.target.value)
-            }
-            placeholder="Search location..."
-          />
+        <SearchContainer>
+          <SearchWrapper onSubmit={handleSubmit}>
+            <SearchInput
+              type="text"
+              value={query}
+              onChange={(event) =>
+                setQuery(event.target.value)
+              }
+              placeholder="Search location..."
+            />
 
-          <SearchButton type="submit">
-            <FiSearch />
-          </SearchButton>
-        </SearchWrapper>
+            <SearchButton type="submit">
+              <FiSearch />
+            </SearchButton>
+          </SearchWrapper>
+
+          {query.trim().length >= 2 && (
+            <Suggestions>
+              {loadingSuggestions ? (
+                <SuggestionLoading>
+                  Searching...
+                </SuggestionLoading>
+              ) : suggestions.length > 0 ? (
+                suggestions.map((location, index) => (
+                  <Suggestion
+                    key={`${location.lat}-${location.lon}-${index}`}
+                    type="button"
+                    onClick={() =>
+                      handleSuggestionClick(location)
+                    }
+                  >
+                    <FiMapPin />
+
+                    <SuggestionText>
+                      <SuggestionCity>
+                        {location.name}
+                      </SuggestionCity>
+
+                      <SuggestionCountry>
+                        {location.state
+                          ? `${location.state}, `
+                          : ""}
+                        {location.country}
+                      </SuggestionCountry>
+                    </SuggestionText>
+                  </Suggestion>
+                ))
+              ) : (
+                <SuggestionLoading>
+                  Location not found
+                </SuggestionLoading>
+              )}
+            </Suggestions>
+          )}
+        </SearchContainer>
       </HeroContent>
     </HeroWrapper>
   );
