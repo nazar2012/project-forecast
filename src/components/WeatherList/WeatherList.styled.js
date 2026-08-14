@@ -1,9 +1,9 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 export const WeatherSection = styled.section`
   width: 100%;
   padding: 30px 0 50px;
-  background: #ffffff;
+  background: ${({ theme }) => theme.background};
   box-sizing: border-box;
 
   @media screen and (min-width: 564px) {
@@ -17,12 +17,17 @@ export const WeatherSection = styled.section`
 
 export const WeatherListWrapper = styled.div`
   width: 100%;
+
   display: flex;
   justify-content: center;
   align-items: flex-start;
+
   flex-wrap: wrap;
+
   gap: 30px;
+
   padding: 0 16px;
+
   box-sizing: border-box;
 
   @media screen and (min-width: 564px) {
@@ -43,14 +48,62 @@ export const WeatherCard = styled.article`
   max-width: 340px;
   min-height: 455px;
   padding: 14px 22px 18px;
-
   display: flex;
   flex-direction: column;
   align-items: center;
-
   box-sizing: border-box;
   border-radius: 18px;
-  background: #e9e9e9;
+  background: ${({ theme }) => theme.card};
+  transform: translateY(0) scale(1);
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.08);
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+
+  &:hover {
+    transform: translateY(-8px) scale(1.015);
+    box-shadow:
+      0 20px 45px rgba(0, 0, 0, 0.18);
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -120%;
+    left: -70%;
+    width: 50%;
+    height: 300%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.18),
+      transparent
+    );
+
+    transform: rotate(20deg);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      left 0.7s ease,
+      opacity 0.3s ease;
+    z-index: 3;
+  }
+
+  &:hover::before {
+    left: 120%;
+    opacity: 1;
+  }
+
+  ${({ theme }) =>
+    theme.background === "#111111" &&
+    `box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.35);
+      &:hover {
+        box-shadow:
+          0 20px 45px rgba(0, 0, 0, 0.55);
+      }
+    `}
 
   @media screen and (min-width: 564px) {
     max-width: 330px;
@@ -65,51 +118,65 @@ export const WeatherCard = styled.article`
     min-height: 500px;
     padding: 16px 30px 20px;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+    &:hover {
+      transform: none;
+    }
+    &::before {
+      display: none;
+    }
+  }
 `;
 
 export const WeatherBackground = styled.img`
   position: absolute;
   inset: 0;
-
   width: 100%;
   height: 100%;
-
   object-fit: cover;
-
   z-index: 0;
+  transform: scale(1);
+  transition: transform 0.8s ease, filter 0.8s ease;
+  ${WeatherCard}:hover & {
+    transform: scale(1.06);
+  }
 `;
 
 export const WeatherOverlay = styled.div`
   position: absolute;
   inset: 0;
-
   background: rgba(0, 0, 0, 0.35);
-
   z-index: 1;
 `;
 
 export const WeatherCardContent = styled.div`
   position: relative;
   z-index: 2;
-
   width: 100%;
 `;
 
 export const CardTop = styled.div`
   width: 100%;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
 `;
 
 export const City = styled.span`
-  color: #111111;
+  color: ${({ theme }) => theme.text};
+
   font-size: 14px;
   font-weight: 400;
+
   line-height: 1;
 
   overflow: hidden;
+
   text-overflow: ellipsis;
+
   white-space: nowrap;
 
   max-width: 60%;
@@ -124,10 +191,13 @@ export const City = styled.span`
 `;
 
 export const Country = styled.span`
-  color: #111111;
+  color: ${({ theme }) => theme.text};
+
   font-size: 14px;
   font-weight: 400;
+
   line-height: 1;
+
   text-align: right;
 
   @media screen and (min-width: 564px) {
@@ -141,9 +211,12 @@ export const Country = styled.span`
 
 export const Time = styled.div`
   margin-top: 20px;
-  color: #111111;
+
+  color: ${({ theme }) => theme.text};
+
   font-size: 25px;
   font-weight: 400;
+
   line-height: 1;
 
   @media screen and (min-width: 564px) {
@@ -162,6 +235,7 @@ export const ForecastButtons = styled.div`
 
   display: flex;
   align-items: center;
+
   gap: 12px;
 
   @media screen and (min-width: 564px) {
@@ -179,10 +253,12 @@ export const ForecastButton = styled.button`
   height: 32px;
 
   padding: 0;
+
   border: none;
   border-radius: 10px;
 
-  background: #ffb36c;
+  background: ${({ theme }) => theme.button};
+
   color: #111111;
 
   font-size: 10px;
@@ -195,7 +271,10 @@ export const ForecastButton = styled.button`
     transform 0.2s ease;
 
   &:hover {
-    background: #ffa451;
+    background: ${({ theme }) =>
+    `color-mix(in srgb, ${theme.button} 82%, black)`};
+
+    color: #111111;
   }
 
   &:active {
@@ -205,12 +284,14 @@ export const ForecastButton = styled.button`
   @media screen and (min-width: 564px) {
     width: 125px;
     height: 33px;
+
     font-size: 11px;
   }
 
   @media screen and (min-width: 1160px) {
     width: 134px;
     height: 34px;
+
     font-size: 12px;
   }
 `;
@@ -224,9 +305,11 @@ export const DateInfo = styled.div`
 
   gap: 9px;
 
-  color: #111111;
+  color: ${({ theme }) => theme.text};
+
   font-size: 12px;
   font-weight: 400;
+
   line-height: 1;
 
   @media screen and (min-width: 564px) {
@@ -236,7 +319,9 @@ export const DateInfo = styled.div`
 
   @media screen and (min-width: 1160px) {
     margin-top: 20px;
+
     gap: 13px;
+
     font-size: 14px;
   }
 `;
@@ -244,7 +329,8 @@ export const DateInfo = styled.div`
 export const DateDivider = styled.span`
   width: 1px;
   height: 16px;
-  background: #111111;
+
+  background: ${({ theme }) => theme.text};
 
   @media screen and (min-width: 1160px) {
     height: 18px;
@@ -262,12 +348,14 @@ export const WeatherIcon = styled.img`
   @media screen and (min-width: 564px) {
     width: 115px;
     height: 115px;
+
     margin-top: 14px;
   }
 
   @media screen and (min-width: 1160px) {
     width: 125px;
     height: 125px;
+
     margin-top: 17px;
   }
 `;
@@ -275,9 +363,11 @@ export const WeatherIcon = styled.img`
 export const Temperature = styled.div`
   margin-top: 2px;
 
-  color: #111111;
+  color: ${({ theme }) => theme.text};
+
   font-size: 32px;
   font-weight: 400;
+
   line-height: 1;
 
   @media screen and (min-width: 564px) {
@@ -286,13 +376,16 @@ export const Temperature = styled.div`
 
   @media screen and (min-width: 1160px) {
     margin-top: 3px;
+
     font-size: 36px;
   }
 `;
 
 export const CardActions = styled.div`
   width: 100%;
+
   margin-top: auto;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -307,20 +400,29 @@ export const ActionButton = styled.button`
   justify-content: center;
 
   padding: 0;
+
   border: none;
 
   background: transparent;
-  color: #111111;
+
+  color: ${({ theme }) => theme.text};
 
   cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    transform 0.3s ease;
 
   svg {
     width: 25px;
     height: 25px;
+
     stroke-width: 2;
   }
 
   &:hover {
+    color: ${({ theme }) => theme.button};
+
     transform: rotate(180deg);
   }
 
@@ -335,31 +437,52 @@ export const ActionButton = styled.button`
   }
 `;
 
+const favoritePop = keyframes`
+  0% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.35);
+  }
+
+  70% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+`;
+
 export const FavoriteButton = styled.button`
   width: 32px;
   height: 32px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   padding: 0;
   border: none;
-
   background: transparent;
   color: #ff4141;
-
   cursor: pointer;
-
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+    animation: ${({ $active }) =>
+    $active ? favoritePop : "none"} 0.45s ease;
   svg {
     width: 28px;
     height: 28px;
+
     stroke-width: 1.8;
 
-    fill: ${(props) =>
-    props.$active
-      ? "#ff4141"
-      : "transparent"};
+    fill: ${({ $active }) =>
+    $active ? "#ff4141" : "transparent"};
+  }
+
+  &:hover {
+    transform: scale(1.08);
   }
 
   @media screen and (min-width: 1160px) {
@@ -383,13 +506,12 @@ export const UnitButton = styled.button`
   align-items: center;
   justify-content: center;
 
-  margin: 0;
-
   border: none;
   border-radius: 10px;
 
-  background: #111111;
-  color: #ffffff;
+  background: ${({ theme }) => theme.text};
+
+  color: ${({ theme }) => theme.background};
 
   font-size: 11px;
   font-weight: 500;
@@ -398,10 +520,13 @@ export const UnitButton = styled.button`
 
   transition:
     background 0.2s ease,
+    color 0.2s ease,
     transform 0.2s ease;
 
   &:hover {
-    background: #333333;
+    background: ${({ theme }) => theme.button};
+
+    color: #111111;
   }
 
   &:active {
@@ -411,6 +536,7 @@ export const UnitButton = styled.button`
   @media screen and (min-width: 1160px) {
     min-width: 45px;
     height: 34px;
+
     font-size: 12px;
   }
 `;
@@ -420,10 +546,12 @@ export const MoreButton = styled.button`
   height: 31px;
 
   padding: 0;
+
   border: none;
   border-radius: 10px;
 
-  background: #ffb36c;
+  background: ${({ theme }) => theme.button};
+
   color: #111111;
 
   font-size: 11px;
@@ -436,7 +564,10 @@ export const MoreButton = styled.button`
     transform 0.2s ease;
 
   &:hover {
-    background: #ffa451;
+    background: ${({ theme }) =>
+    `color-mix(in srgb, ${theme.button} 82%, black)`};
+
+    color: #111111;
   }
 
   &:active {
@@ -446,6 +577,7 @@ export const MoreButton = styled.button`
   @media screen and (min-width: 1160px) {
     width: 116px;
     height: 33px;
+
     font-size: 12px;
   }
 `;
@@ -459,21 +591,30 @@ export const DeleteButton = styled.button`
   justify-content: center;
 
   padding: 0;
+
   border: none;
 
   background: transparent;
-  color: #111111;
+
+  color: ${({ theme }) => theme.text};
 
   cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 
   svg {
     width: 25px;
     height: 25px;
+
     stroke-width: 2;
   }
 
   &:hover {
     color: #ff4141;
+
+    transform: scale(1.08);
   }
 
   @media screen and (min-width: 1160px) {
@@ -486,4 +627,3 @@ export const DeleteButton = styled.button`
     }
   }
 `;
-

@@ -5,25 +5,31 @@ export const GlobalStyle = createGlobalStyle`
     box-sizing: border-box;
   }
 
-  html {
-    scroll-behavior: smooth;
-  }
+html {
+  scroll-behavior: smooth;
+}
 
-  body {
-    margin: 0;
+[id] {
+  scroll-margin-top: 90px;
+}
 
-    font-family:
-      Inter,
-      -apple-system,
-      BlinkMacSystemFont,
-      "Segoe UI",
-      sans-serif;
+body {
+  margin: 0;
 
-    background: #ffffff;
-    color: #111111;
+  background: ${({ theme }) =>
+    theme.background};
 
-    -webkit-font-smoothing: antialiased;
-  }
+  color: ${({ theme }) =>
+    theme.text};
+
+  transition:
+    background-color 0.6s ease,
+    color 0.6s ease;
+
+  font-family:
+    "Poppins",
+    sans-serif;
+}
 
   button,
   input {

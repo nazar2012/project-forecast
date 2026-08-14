@@ -24,6 +24,8 @@ export default function WeeklyForecast({
   city,
   unit = "C",
   onClose,
+  darkMode = false,
+  accentColor = "#ffb36c",
 }) {
   const [forecast, setForecast] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -126,9 +128,9 @@ export default function WeeklyForecast({
 
             const middle =
               items[
-                Math.floor(
-                  items.length / 2
-                )
+              Math.floor(
+                items.length / 2
+              )
               ];
 
             return {
@@ -231,6 +233,7 @@ export default function WeeklyForecast({
             {forecast.map(
               (day, index) => (
                 <ForecastRow
+                  $darkMode={darkMode}
                   key={`${day.date.getTime()}-${index}`}
                 >
                   <ForecastDate>

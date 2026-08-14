@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ThemeProvider } from "styled-components";
 
 import Header from "./components/Header/Header";
 import Hero from "./components/Hero/Hero";
@@ -8,29 +9,94 @@ import NatureSlider from "./components/NatureSlider/NatureSlider";
 import Footer from "./components/Footer/Footer";
 import Modal from "./components/Modal/Modal";
 import Profile from "./components/Profile/Profile";
+import WeatherMap from "./components/WeatherMap/WeatherMap";
+import ColorModal from "./components/ColorModal/ColorModal";
+import BackToTop from "./components/BackToTop/BackToTop";
 
 import { GlobalStyle } from "./GlobalStyle";
 import { AppWrapper } from "./App.styled";
-// import WeatherTest from "./components/WeatherTest/WeatherTest";
+
+const lightTheme = {
+  background: "#ffffff",
+  card: "#e9e9e9",
+  secondary: "#dcdcdc",
+  text: "#111111",
+  muted: "#666666",
+};
+
+const darkTheme = {
+  background: "#111111",
+  card: "#222222",
+  secondary: "#2d2d2d",
+  text: "#ffffff",
+  muted: "#b5b5b5",
+};
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [avatar, setAvatar] = useState(null);
+
   const [cities, setCities] = useState([]);
   const [favorites, setFavorites] = useState([]);
 
-  const [temperatureUnit, setTemperatureUnit] = useState(() => {
-    return localStorage.getItem("temperatureUnit") || "C";
+  const [temperatureUnit, setTemperatureUnit] =
+    useState(() => {
+      return (
+        localStorage.getItem(
+          "temperatureUnit"
+        ) || "C"
+      );
+    });
+
+  const [darkMode, setDarkMode] = useState(() => {
+    return (
+      localStorage.getItem("theme") ===
+      "dark"
+    );
   });
 
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [accentColor, setAccentColor] =
+    useState(() => {
+      return (
+        localStorage.getItem(
+          "accentColor"
+        ) || "#ffb36c"
+      );
+    });
+
+  const [isColorModalOpen, setIsColorModalOpen] =
+    useState(() => {
+      return (
+        !localStorage.getItem(
+          "accentColor"
+        )
+      );
+    });
+
+  const [isLoaded, setIsLoaded] =
+    useState(false);
+
+  const [isModalOpen, setIsModalOpen] =
+    useState(false);
+
+  const [isProfileOpen, setIsProfileOpen] =
+    useState(false);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("weatherUser");
-    const savedAvatar = localStorage.getItem("weatherAvatar");
-    const savedFavorites = localStorage.getItem("weatherFavorites");
+    const savedUser =
+      localStorage.getItem(
+        "weatherUser"
+      );
+
+    const savedAvatar =
+      localStorage.getItem(
+        "weatherAvatar"
+      );
+
+    const savedFavorites =
+      localStorage.getItem(
+        "weatherFavorites"
+      );
 
     if (savedUser) {
       setUser(JSON.parse(savedUser));
@@ -41,7 +107,8 @@ export default function App() {
     }
 
     if (savedFavorites) {
-      const parsedFavorites = JSON.parse(savedFavorites);
+      const parsedFavorites =
+        JSON.parse(savedFavorites);
 
       setFavorites(parsedFavorites);
       setCities(parsedFavorites);
@@ -69,7 +136,9 @@ export default function App() {
     setIsModalOpen(false);
   };
 
-  const handleUserUpdate = (updatedUser) => {
+  const handleUserUpdate = (
+    updatedUser
+  ) => {
     localStorage.setItem(
       "weatherUser",
       JSON.stringify(updatedUser)
@@ -78,7 +147,9 @@ export default function App() {
     setUser(updatedUser);
   };
 
-  const handleAvatarChange = (newAvatar) => {
+  const handleAvatarChange = (
+    newAvatar
+  ) => {
     localStorage.setItem(
       "weatherAvatar",
       newAvatar
@@ -88,8 +159,13 @@ export default function App() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("weatherUser");
-    localStorage.removeItem("weatherAvatar");
+    localStorage.removeItem(
+      "weatherUser"
+    );
+
+    localStorage.removeItem(
+      "weatherAvatar"
+    );
 
     setUser(null);
     setAvatar(null);
@@ -116,94 +192,155 @@ export default function App() {
     setIsProfileOpen(false);
   };
 
-  const handleTemperatureUnitChange = () => {
-    setTemperatureUnit((prevUnit) => {
-      const newUnit = prevUnit === "C" ? "F" : "C";
+  const handleTemperatureUnitChange =
+    () => {
+      setTemperatureUnit((prevUnit) => {
+        const newUnit =
+          prevUnit === "C"
+            ? "F"
+            : "C";
 
-      localStorage.setItem(
-        "temperatureUnit",
-        newUnit
-      );
+        localStorage.setItem(
+          "temperatureUnit",
+          newUnit
+        );
 
-      return newUnit;
-    });
-  };
+        return newUnit;
+      });
+    };
 
   const handleCityAdd = (newCity) => {
     setCities((prevCities) => {
-      const alreadyExists = prevCities.some(
-        (city) => city.id === newCity.id
-      );
+      const alreadyExists =
+        prevCities.some(
+          (city) =>
+            city.id === newCity.id
+        );
 
       if (alreadyExists) {
         return prevCities;
       }
 
-      return [...prevCities, newCity];
+      return [
+        ...prevCities,
+        newCity,
+      ];
     });
   };
 
-  const handleDeleteCity = (cityId) => {
-    setCities((prevCities) =>
-      prevCities.filter(
-        (city) => city.id !== cityId
-      )
-    );
+  const toggleTheme = () => {
+    setDarkMode((prev) => {
+      const newValue = !prev;
 
-    setFavorites((prevFavorites) =>
-      prevFavorites.filter(
-        (city) => city.id !== cityId
-      )
+      localStorage.setItem(
+        "theme",
+        newValue ? "dark" : "light"
+      );
+
+      return newValue;
+    });
+  };
+
+  const openColorModal = () => {
+    setIsColorModalOpen(true);
+  };
+
+  const closeColorModal = () => {
+    setIsColorModalOpen(false);
+  };
+
+  const handleColorChange = (
+    newColor
+  ) => {
+    setAccentColor(newColor);
+
+    localStorage.setItem(
+      "accentColor",
+      newColor
     );
   };
 
-  const handleFavorite = (cityId) => {
-    setFavorites((prevFavorites) => {
-      const isFavorite = prevFavorites.some(
-        (city) => city.id === cityId
-      );
+  const handleDeleteCity = (
+    cityId
+  ) => {
+    setCities((prevCities) =>
+      prevCities.filter(
+        (city) =>
+          city.id !== cityId
+      )
+    );
 
-      if (isFavorite) {
-        const updatedFavorites =
-          prevFavorites.filter(
-            (city) => city.id !== cityId
+    setFavorites(
+      (prevFavorites) =>
+        prevFavorites.filter(
+          (city) =>
+            city.id !== cityId
+        )
+    );
+  };
+
+  const handleFavorite = (
+    cityId
+  ) => {
+    setFavorites(
+      (prevFavorites) => {
+        const isFavorite =
+          prevFavorites.some(
+            (city) =>
+              city.id === cityId
           );
+
+        if (isFavorite) {
+          const updatedFavorites =
+            prevFavorites.filter(
+              (city) =>
+                city.id !== cityId
+            );
+
+          localStorage.setItem(
+            "weatherFavorites",
+            JSON.stringify(
+              updatedFavorites
+            )
+          );
+
+          return updatedFavorites;
+        }
+
+        const city = cities.find(
+          (city) =>
+            city.id === cityId
+        );
+
+        if (!city) {
+          return prevFavorites;
+        }
+
+        const updatedFavorites = [
+          ...prevFavorites,
+          city,
+        ];
 
         localStorage.setItem(
           "weatherFavorites",
-          JSON.stringify(updatedFavorites)
+          JSON.stringify(
+            updatedFavorites
+          )
         );
 
         return updatedFavorites;
       }
-
-      const city = cities.find(
-        (city) => city.id === cityId
-      );
-
-      if (!city) {
-        return prevFavorites;
-      }
-
-      const updatedFavorites = [
-        ...prevFavorites,
-        city,
-      ];
-
-      localStorage.setItem(
-        "weatherFavorites",
-        JSON.stringify(updatedFavorites)
-      );
-
-      return updatedFavorites;
-    });
+    );
   };
 
-  const handleRefresh = async (city) => {
+  const handleRefresh = async (
+    city
+  ) => {
     try {
-      const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${city.latitude}&lon=${city.longitude}&appid=${import.meta.env.VITE_OPENWEATHER_API_KEY}&units=metric`
-      );
+      const response =
+        await fetch(
+          `https://api.openweathermap.org/data/2.5/weather?lat=${city.latitude}&lon=${city.longitude}&appid=${import.meta.env.VITE_OPENWEATHER_API_KEY}&units=metric`
+        );
 
       if (!response.ok) {
         throw new Error(
@@ -211,30 +348,45 @@ export default function App() {
         );
       }
 
-      const weather = await response.json();
+      const weather =
+        await response.json();
 
       const updatedCity = {
         ...city,
-        temperature: weather.main.temp,
-        icon: weather.weather[0].icon,
-        description: weather.weather[0].description,
-        timezone: weather.timezone,
+
+        temperature:
+          weather.main.temp,
+
+        icon:
+          weather.weather[0]
+            .icon,
+
+        description:
+          weather.weather[0]
+            .description,
+
+        timezone:
+          weather.timezone,
       };
 
-      setCities((prevCities) =>
-        prevCities.map((item) =>
-          item.id === city.id
-            ? updatedCity
-            : item
-        )
+      setCities(
+        (prevCities) =>
+          prevCities.map(
+            (item) =>
+              item.id === city.id
+                ? updatedCity
+                : item
+          )
       );
 
-      setFavorites((prevFavorites) =>
-        prevFavorites.map((item) =>
-          item.id === city.id
-            ? updatedCity
-            : item
-        )
+      setFavorites(
+        (prevFavorites) =>
+          prevFavorites.map(
+            (item) =>
+              item.id === city.id
+                ? updatedCity
+                : item
+          )
       );
     } catch (error) {
       console.error(
@@ -244,8 +396,18 @@ export default function App() {
     }
   };
 
+  const currentTheme = darkMode
+    ? darkTheme
+    : lightTheme;
+
+  const theme = {
+    ...currentTheme,
+    button: accentColor,
+    accent: accentColor,
+  };
+
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <GlobalStyle />
 
       <AppWrapper>
@@ -254,30 +416,48 @@ export default function App() {
           avatar={avatar}
           onSignUp={openSignUp}
           onProfile={openProfile}
+          darkMode={darkMode}
+          onToggle={toggleTheme}
         />
 
-        <Hero onCityAdd={handleCityAdd} />
+        <Hero
+          onCityAdd={handleCityAdd}
+        />
 
         <WeatherList
           cities={cities}
           favorites={favorites}
-          temperatureUnit={temperatureUnit}
-          onTemperatureUnitChange={
-            handleTemperatureUnitChange
-          }
           onRefresh={handleRefresh}
           onFavorite={handleFavorite}
           onDelete={handleDeleteCity}
+          darkMode={darkMode}
+          userColor={accentColor}
         />
 
-        <News />
+        <WeatherMap
+          cities={cities}
+          darkMode={darkMode}
+          accentColor={accentColor}
+        />
 
-        <NatureSlider />
+        <News
+          darkMode={darkMode}
+          accentColor={accentColor}
+        />
 
-        <Footer />
+        <NatureSlider
+          darkMode={darkMode}
+          accentColor={accentColor}
+        />
+
+        <Footer
+          darkMode={darkMode}
+          accentColor={accentColor}
+        />
 
         {isModalOpen && (
           <Modal
+            darkMode={darkMode}
             onClose={closeModal}
             onSubmit={handleSignUp}
           />
@@ -288,12 +468,40 @@ export default function App() {
             user={user}
             avatar={avatar}
             onClose={closeProfile}
-            onUserUpdate={handleUserUpdate}
-            onAvatarChange={handleAvatarChange}
+            onUserUpdate={
+              handleUserUpdate
+            }
+            onAvatarChange={
+              handleAvatarChange
+            }
             onLogout={handleLogout}
+            darkMode={darkMode}
+
+            onOpenColor={
+              openColorModal
+            }
+
+            accentColor={
+              accentColor
+            }
           />
         )}
+
+        {isColorModalOpen && (
+          <ColorModal
+            currentColor={
+              accentColor
+            }
+            onColorChange={
+              handleColorChange
+            }
+            onClose={
+              closeColorModal
+            }
+          />
+        )}
+        <BackToTop />
       </AppWrapper>
-    </>
+    </ThemeProvider>
   );
 }

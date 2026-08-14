@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { FiSearch, FiMapPin } from "react-icons/fi";
-
+import { FiSearch, FiMapPin, FiX } from "react-icons/fi";
 import heroBg from "../../assets/weather.png";
 
 import {
@@ -16,6 +15,7 @@ import {
   SearchWrapper,
   SearchInput,
   SearchButton,
+  ClearButton,
   Suggestions,
   Suggestion,
   SuggestionText,
@@ -207,7 +207,7 @@ export default function Hero({ onCityAdd }) {
   ).padStart(2, "0");
 
   return (
-    <HeroWrapper>
+    <HeroWrapper id="about">
       <HeroBackground
         style={{
           backgroundImage: `url(${heroBg})`,
@@ -248,6 +248,19 @@ export default function Hero({ onCityAdd }) {
               }
               placeholder="Search location..."
             />
+
+            {query && (
+              <ClearButton
+                type="button"
+                onClick={() => {
+                  setQuery("");
+                  setSuggestions([]);
+                }}
+                aria-label="Clear search"
+              >
+                <FiX />
+              </ClearButton>
+            )}
 
             <SearchButton type="submit">
               <FiSearch />

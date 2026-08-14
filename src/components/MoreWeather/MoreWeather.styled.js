@@ -8,7 +8,10 @@ export const MoreWeatherSection = styled.section`
   padding: 24px 45px;
   box-sizing: border-box;
   border-radius: 10px;
-  background: #e9e9e9;
+
+  background: ${({ theme }) => theme.card};
+  color: ${({ theme }) => theme.text};
+
   animation: showMoreWeather 0.3s ease;
 
   @keyframes showMoreWeather {
@@ -16,6 +19,7 @@ export const MoreWeatherSection = styled.section`
       opacity: 0;
       transform: translateY(10px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -47,7 +51,7 @@ export const MoreWeatherTitle = styled.h2`
   margin: 0;
   font-size: 18px;
   font-weight: 500;
-  color: #111;
+  color: ${({ theme }) => theme.text};
 
   @media screen and (max-width: 560px) {
     font-size: 16px;
@@ -57,7 +61,7 @@ export const MoreWeatherTitle = styled.h2`
 export const MoreWeatherCity = styled.p`
   margin: 4px 0 0;
   font-size: 13px;
-  color: #555;
+  color: ${({ theme }) => theme.muted};
 
   @media screen and (max-width: 560px) {
     font-size: 12px;
@@ -67,22 +71,27 @@ export const MoreWeatherCity = styled.p`
 export const CloseButton = styled.button`
   width: 32px;
   height: 32px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   padding: 0;
   border: none;
   border-radius: 50%;
+
   background: transparent;
-  color: #111;
+  color: ${({ theme }) => theme.text};
+
   cursor: pointer;
   font-size: 22px;
+
   transition:
     background 0.2s ease,
     transform 0.2s ease;
 
   &:hover {
-    background: #d5d5d5;
+    background: ${({ theme }) => theme.secondary};
     transform: rotate(90deg);
   }
 
@@ -115,14 +124,18 @@ export const MoreWeatherGrid = styled.div`
 export const MoreWeatherCard = styled.div`
   width: 170px;
   height: 127px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+
   padding-top: 12px;
   box-sizing: border-box;
   border-radius: 6px;
-  background: rgb(217, 217, 217);
+
+  background: ${({ theme }) => theme.secondary};
+  color: ${({ theme }) => theme.text};
 
   @media screen and (max-width: 700px) {
     width: 100%;
@@ -139,7 +152,7 @@ export const MoreWeatherCard = styled.div`
 export const MoreWeatherLabel = styled.span`
   font-size: 11px;
   line-height: 1;
-  color: #111;
+  color: ${({ theme }) => theme.text};
   margin-bottom: 7px;
 
   @media screen and (max-width: 450px) {
@@ -150,7 +163,7 @@ export const MoreWeatherLabel = styled.span`
 export const MoreWeatherValue = styled.span`
   font-size: 19px;
   line-height: 1;
-  color: #111;
+  color: ${({ theme }) => theme.text};
 
   @media screen and (max-width: 450px) {
     font-size: 17px;
@@ -160,6 +173,7 @@ export const MoreWeatherValue = styled.span`
 export const MoreWeatherIcon = styled.div`
   margin-top: 9px;
   height: 50px;
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -180,10 +194,12 @@ export const MoreWeatherIcon = styled.div`
 
 export const Loading = styled.div`
   min-height: 276px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #555;
+
+  color: ${({ theme }) => theme.muted};
 
   @media screen and (max-width: 560px) {
     min-height: 220px;
@@ -192,10 +208,12 @@ export const Loading = styled.div`
 
 export const ErrorMessage = styled.div`
   min-height: 276px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #555;
+
+  color: ${({ theme }) => theme.muted};
 
   @media screen and (max-width: 560px) {
     min-height: 220px;

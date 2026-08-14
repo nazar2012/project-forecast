@@ -10,15 +10,18 @@ export const HeroWrapper = styled.section`
   display: flex;
   justify-content: center;
   background: #111111;
+  margin-top: 64px;
 
   @media screen and (min-width: 564px) {
     height: calc(100vh - 70px);
     min-height: 600px;
+    margin-top: 72px;
   }
 
   @media screen and (min-width: 1160px) {
     height: calc(100vh - 82px);
     min-height: 650px;
+    margin-top: 72px;
   }
 `;
 
@@ -42,13 +45,16 @@ export const HeroBackground = styled.div`
 export const HeroContent = styled.div`
   position: relative;
   z-index: 1;
+
   width: 100%;
   max-width: 1100px;
   height: 100%;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
   box-sizing: border-box;
   padding: 0 16px;
 
@@ -63,10 +69,13 @@ export const HeroContent = styled.div`
 
 export const Title = styled.h1`
   margin: 0;
+
   color: #ffffff;
+
   font-size: 28px;
   font-weight: 700;
   line-height: 1.2;
+
   text-align: center;
 
   @media screen and (min-width: 564px) {
@@ -80,9 +89,11 @@ export const Title = styled.h1`
 
 export const Info = styled.div`
   margin-top: 35px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   gap: 20px;
 
   @media screen and (min-width: 564px) {
@@ -98,10 +109,13 @@ export const Info = styled.div`
 
 export const Description = styled.p`
   margin: 0;
+
   color: #ffffff;
+
   font-size: 14px;
   font-weight: 400;
   line-height: 1.2;
+
   text-align: right;
 
   @media screen and (min-width: 564px) {
@@ -117,7 +131,9 @@ export const Description = styled.p`
 export const Divider = styled.div`
   width: 2px;
   height: 75px;
+
   flex-shrink: 0;
+
   background: #ffffff;
 
   @media screen and (min-width: 564px) {
@@ -131,10 +147,13 @@ export const Divider = styled.div`
 
 export const DateBlock = styled.p`
   margin: 0;
+
   color: #ffffff;
+
   font-size: 14px;
   font-weight: 400;
   line-height: 1.2;
+
   text-align: left;
 
   sup {
@@ -164,8 +183,10 @@ export const DateBlock = styled.p`
 
 export const SearchContainer = styled.div`
   position: relative;
+
   width: calc(100% - 20px);
   max-width: 420px;
+
   margin-top: 55px;
 
   @media screen and (min-width: 564px) {
@@ -193,7 +214,9 @@ export const SearchWrapper = styled.form`
 
   background: #ffffff;
 
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  box-shadow:
+    0 4px 15px
+    rgba(0, 0, 0, 0.25);
 
   @media screen and (min-width: 564px) {
     height: 42px;
@@ -206,6 +229,7 @@ export const SearchWrapper = styled.form`
 
 export const SearchInput = styled.input`
   flex: 1;
+
   width: 100%;
   min-width: 0;
   height: 40px;
@@ -253,17 +277,22 @@ export const SearchButton = styled.button`
 
   border: none;
 
-  background: #ffb36c;
+  background: ${({ theme }) => theme.button};
   color: #111111;
 
   cursor: pointer;
 
   transition:
-    background 0.2s ease,
-    transform 0.2s ease;
+    background 0.25s ease,
+    transform 0.2s ease,
+    box-shadow 0.25s ease;
 
   &:hover {
-    background: #ffa451;
+    background: ${({ theme }) => theme.button};
+
+    box-shadow:
+      inset 0 -3px 0
+      ${({ theme }) => `${theme.button}55`};
   }
 
   &:active {
@@ -273,6 +302,13 @@ export const SearchButton = styled.button`
   svg {
     width: 18px;
     height: 18px;
+
+    transition:
+      transform 0.2s ease;
+  }
+
+  &:hover svg {
+    transform: scale(1.08);
   }
 
   @media screen and (min-width: 564px) {
@@ -298,15 +334,24 @@ export const SearchButton = styled.button`
 
 export const Suggestions = styled.div`
   position: absolute;
+
   top: calc(100% + 6px);
   left: 0;
+
   width: 100%;
   max-height: 260px;
+
   overflow-y: auto;
   overflow-x: hidden;
+
   border-radius: 10px;
+
   background: #ffffff;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+
+  box-shadow:
+    0 8px 25px
+    rgba(0, 0, 0, 0.2);
+
   z-index: 100;
 
   &::-webkit-scrollbar {
@@ -319,12 +364,22 @@ export const Suggestions = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #ffb36c;
+    background: ${({ theme }) =>
+    theme.button};
+
     border-radius: 10px;
+
+    transition:
+      background 0.25s ease;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: #ffa451;
+    background: ${({ theme }) =>
+    theme.button};
+
+    box-shadow:
+      0 0 5px
+      ${({ theme }) => `${theme.button}66`};
   }
 `;
 
@@ -347,7 +402,9 @@ export const Suggestion = styled.button`
 
   cursor: pointer;
 
-  transition: background 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 
   svg {
     width: 17px;
@@ -355,11 +412,28 @@ export const Suggestion = styled.button`
 
     flex-shrink: 0;
 
-    color: #ff9d4d;
+    color: ${({ theme }) =>
+    theme.button};
+
+    transition:
+      color 0.25s ease,
+      transform 0.2s ease;
   }
 
   &:hover {
-    background: #f5f5f5;
+    background: ${({ theme }) =>
+    `${theme.button}18`};
+
+    svg {
+      color: ${({ theme }) =>
+    theme.button};
+
+      transform: translateY(-1px) scale(1.08);
+    }
+  }
+
+  &:active {
+    transform: scale(0.99);
   }
 
   @media screen and (min-width: 564px) {
@@ -395,10 +469,8 @@ export const SuggestionCity = styled.span`
 
 export const SuggestionCountry = styled.span`
   color: #888888;
-
   font-size: 11px;
   font-weight: 400;
-
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -410,10 +482,44 @@ export const SuggestionCountry = styled.span`
 
 export const SuggestionLoading = styled.div`
   padding: 13px 16px;
-
   color: #888888;
-
   font-size: 12px;
-
   text-align: center;
+`;
+
+export const ClearButton = styled.button`
+  width: 36px;
+  height: 40px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+  background: #ffffff;
+  color: #999999;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    color: #111111;
+    transform: scale(1.08);
+  }
+
+  &:active {
+    transform: scale(0.92);
+  }
+
+  svg {
+    width: 17px;
+    height: 17px;
+  }
 `;

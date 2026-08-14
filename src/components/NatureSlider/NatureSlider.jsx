@@ -7,6 +7,8 @@ import {
   PauseButton,
   Slider,
   Slide,
+  Dots,
+  Dot,
   Loading,
   ErrorMessage,
 } from "./NatureSlider.styled";
@@ -14,17 +16,17 @@ import {
 const API_KEY =
   import.meta.env.VITE_PIXABAY_API_KEY;
 
-export default function NatureSlider() {
+export default function NatureSlider({
+  darkMode,
+  accentColor = "#ffb56c",
+}) {
   const [images, setImages] = useState([]);
   const [activeIndex, setActiveIndex] =
-    useState(2);
-
+    useState(0);
   const [loading, setLoading] =
     useState(true);
-
   const [error, setError] =
     useState(false);
-
   const [isPaused, setIsPaused] =
     useState(false);
 
@@ -42,7 +44,8 @@ export default function NatureSlider() {
           `&per_page=7` +
           `&safesearch=true`;
 
-        const response = await fetch(url);
+        const response =
+          await fetch(url);
 
         const data =
           await response.json();
@@ -50,7 +53,7 @@ export default function NatureSlider() {
         if (!response.ok) {
           throw new Error(
             data.error ||
-              `HTTP error: ${response.status}`
+            `HTTP error: ${response.status}`
           );
         }
 
@@ -63,16 +66,19 @@ export default function NatureSlider() {
           );
         }
 
-        setImages(
+        const loadedImages =
           data.hits.map((item) => ({
             id: item.id,
             url: item.webformatURL,
-            largeUrl: item.largeImageURL,
+            largeUrl:
+              item.largeImageURL,
             alt:
               item.tags ||
               "Beautiful nature",
-          }))
-        );
+          }));
+
+        setImages(loadedImages);
+        setActiveIndex(0);
       } catch (error) {
         console.error(
           "Ошибка загрузки изображений:",
@@ -104,8 +110,9 @@ export default function NatureSlider() {
       );
     }, 2000);
 
-    return () =>
+    return () => {
       clearInterval(timer);
+    };
   }, [images, isPaused]);
 
   const getPosition = (index) => {
@@ -131,14 +138,14 @@ export default function NatureSlider() {
 
   if (loading) {
     return (
-      <NatureSection>
+      <NatureSection $dark={darkMode}>
         <NatureHeader>
-          <NatureTitle>
+          <NatureTitle $dark={darkMode}>
             Beautiful nature
           </NatureTitle>
         </NatureHeader>
 
-        <Loading>
+        <Loading $dark={darkMode}>
           Loading...
         </Loading>
       </NatureSection>
@@ -147,14 +154,14 @@ export default function NatureSlider() {
 
   if (error) {
     return (
-      <NatureSection>
+      <NatureSection $dark={darkMode}>
         <NatureHeader>
-          <NatureTitle>
+          <NatureTitle $dark={darkMode}>
             Beautiful nature
           </NatureTitle>
         </NatureHeader>
 
-        <ErrorMessage>
+        <ErrorMessage $dark={darkMode}>
           Failed to load images.
         </ErrorMessage>
       </NatureSection>
@@ -162,13 +169,14 @@ export default function NatureSlider() {
   }
 
   return (
-    <NatureSection>
+    <NatureSection $dark={darkMode}>
       <NatureHeader>
-        <NatureTitle>
+        <NatureTitle $dark={darkMode}>
           Beautiful nature
         </NatureTitle>
 
         <PauseButton
+          $dark={darkMode}
           type="button"
           onClick={() =>
             setIsPaused(
@@ -193,9 +201,7 @@ export default function NatureSlider() {
                 key={image.id}
                 $position={position}
                 onClick={() =>
-                  setActiveIndex(
-                    index
-                  )
+                  setActiveIndex(index)
                 }
               >
                 <img
@@ -207,6 +213,34 @@ export default function NatureSlider() {
           }
         )}
       </Slider>
+
+      <Dots>
+        {images.map(
+          (image, index) => (
+            <Dot
+              key={image.id}
+              type="button"
+              $active={
+                index === activeIndex
+              }
+              $dark={darkMode}
+              $accentColor={
+                accentColor
+              }
+              aria-label={`Go to slide ${index + 1
+                }`}
+              aria-current={
+                index === activeIndex
+                  ? "true"
+                  : undefined
+              }
+              onClick={() =>
+                setActiveIndex(index)
+              }
+            />
+          )
+        )}
+      </Dots>
     </NatureSection>
   );
 }

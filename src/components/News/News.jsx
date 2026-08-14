@@ -59,7 +59,6 @@ const matchesCategory = (article, category) => {
       "wildlife",
       "landscape",
       "environment",
-      "nature",
     ],
 
     Weather: [
@@ -117,7 +116,6 @@ const matchesCategory = (article, category) => {
       "planet",
       "planets",
       "technology",
-      "technology",
       "experiment",
       "discovery",
       "discover",
@@ -133,7 +131,10 @@ const matchesCategory = (article, category) => {
   );
 };
 
-export default function News() {
+export default function News({
+  darkMode,
+  accentColor,
+}) {
   const [articles, setArticles] = useState([]);
   const [page, setPage] = useState(1);
 
@@ -147,10 +148,14 @@ export default function News() {
     useState("All");
 
   const sectionRef = useRef(null);
+
   const [isVisible, setIsVisible] =
     useState(false);
 
-  // Анимация появления секции
+  // -----------------------------
+  // ANIMATION
+  // -----------------------------
+
   useEffect(() => {
     const observer =
       new IntersectionObserver(
@@ -172,7 +177,10 @@ export default function News() {
     return () => observer.disconnect();
   }, []);
 
-  // Загрузка новостей
+  // -----------------------------
+  // LOAD NEWS
+  // -----------------------------
+
   const loadNews = async (
     pageNumber = 1
   ) => {
@@ -247,12 +255,18 @@ export default function News() {
     }
   };
 
-  // Первая загрузка
+  // -----------------------------
+  // FIRST LOAD
+  // -----------------------------
+
   useEffect(() => {
     loadNews(1);
   }, []);
 
-  // Фильтрация новостей
+  // -----------------------------
+  // FILTER
+  // -----------------------------
+
   const filteredArticles =
     articles.filter((article) =>
       matchesCategory(
@@ -261,7 +275,10 @@ export default function News() {
       )
     );
 
-  // Следующая страница
+  // -----------------------------
+  // NEXT PAGE
+  // -----------------------------
+
   const handleNext = async () => {
     if (loadingMore) {
       return;
@@ -292,6 +309,7 @@ export default function News() {
         console.log(
           "Больше новостей нет"
         );
+
         return;
       }
 
@@ -330,21 +348,32 @@ export default function News() {
     }
   };
 
+  // -----------------------------
+  // CATEGORY
+  // -----------------------------
+
   const handleCategoryChange = (
     category
   ) => {
     setActiveCategory(category);
   };
 
+  // -----------------------------
+  // RENDER
+  // -----------------------------
+
   return (
-    <NewsSection ref={sectionRef}>
+    <NewsSection
+      ref={sectionRef}
+      $dark={darkMode}
+    >
       <NewsContainer>
         <NewsContent
           className={
             isVisible ? "visible" : ""
           }
         >
-          <NewsTitle>
+          <NewsTitle $dark={darkMode}>
             News
           </NewsTitle>
 
@@ -358,6 +387,8 @@ export default function News() {
                     activeCategory ===
                     category
                   }
+                  $dark={darkMode}
+                  $accent={accentColor}
                   onClick={() =>
                     handleCategoryChange(
                       category
@@ -371,17 +402,18 @@ export default function News() {
           </CategoryButtons>
 
           {loading ? (
-            <NewsTitle>
+            <NewsTitle $dark={darkMode}>
               Loading...
             </NewsTitle>
           ) : error ? (
             <>
-              <NewsTitle>
+              <NewsTitle $dark={darkMode}>
                 Something went wrong
               </NewsTitle>
 
               <NewsButton
                 type="button"
+                $accent={accentColor}
                 onClick={() =>
                   loadNews(1)
                 }
@@ -393,12 +425,13 @@ export default function News() {
           ) : filteredArticles.length ===
             0 ? (
             <>
-              <NewsTitle>
+              <NewsTitle $dark={darkMode}>
                 No news in this category
               </NewsTitle>
 
               <NewsButton
                 type="button"
+                $accent={accentColor}
                 onClick={() =>
                   setActiveCategory(
                     "All"
@@ -431,7 +464,9 @@ export default function News() {
                         }}
                       />
 
-                      <NewsCardTitle>
+                      <NewsCardTitle
+                        $dark={darkMode}
+                      >
                         {article.title}
                       </NewsCardTitle>
                     </NewsCard>
@@ -441,6 +476,7 @@ export default function News() {
 
               <NewsButton
                 type="button"
+                $accent={accentColor}
                 onClick={handleNext}
                 disabled={loadingMore}
               >

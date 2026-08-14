@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { FiX, FiCamera, FiEdit2, FiCheck, FiEye, FiEyeOff } from "react-icons/fi";
+import {
+  FiX,
+  FiCamera,
+  FiEdit2,
+  FiCheck,
+  FiEye,
+  FiEyeOff,
+  FiDroplet,
+} from "react-icons/fi";
 import { toast } from "react-toastify";
 
 import {
@@ -22,6 +30,7 @@ import {
   EditButton,
   SaveButton,
   LogoutButton,
+  ColorButton,
 } from "./Profile.styled";
 
 export default function Profile({
@@ -29,30 +38,50 @@ export default function Profile({
   onAvatarChange,
   onUserUpdate,
   onLogout,
+  darkMode,
+  onOpenColor,
 }) {
-  const savedUser = JSON.parse(localStorage.getItem("weatherUser")) || {};
-  const [showPassword, setShowPassword] = useState(false);
-  const [user, setUser] = useState(savedUser);
+  const savedUser =
+    JSON.parse(
+      localStorage.getItem("weatherUser")
+    ) || {};
 
-  const [avatar, setAvatar] = useState(
-    localStorage.getItem("weatherAvatar") || null
-  );
+  const [showPassword, setShowPassword] =
+    useState(false);
 
-  const [editing, setEditing] = useState(false);
+  const [user, setUser] =
+    useState(savedUser);
 
-  const [formData, setFormData] = useState({
-    username: savedUser.username || "",
-    email: savedUser.email || "",
-    password: savedUser.password || "",
-  });
+  const [avatar, setAvatar] =
+    useState(
+      localStorage.getItem(
+        "weatherAvatar"
+      ) || null
+    );
+
+  const [editing, setEditing] =
+    useState(false);
+
+  const [formData, setFormData] =
+    useState({
+      username:
+        savedUser.username || "",
+      email:
+        savedUser.email || "",
+      password:
+        savedUser.password || "",
+    });
 
   const handleAvatarChange = (event) => {
-    const file = event.target.files[0];
+    const file =
+      event.target.files[0];
 
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      toast.error("Please select an image");
+      toast.error(
+        "Please select an image"
+      );
       return;
     }
 
@@ -61,7 +90,10 @@ export default function Profile({
     reader.onloadend = () => {
       const image = reader.result;
 
-      localStorage.setItem("weatherAvatar", image);
+      localStorage.setItem(
+        "weatherAvatar",
+        image
+      );
 
       setAvatar(image);
 
@@ -69,14 +101,19 @@ export default function Profile({
         onAvatarChange(image);
       }
 
-      toast.success("Avatar updated!");
+      toast.success(
+        "Avatar updated!"
+      );
     };
 
     reader.readAsDataURL(file);
   };
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
+    const {
+      name,
+      value,
+    } = event.target;
 
     setFormData((prev) => ({
       ...prev,
@@ -90,19 +127,26 @@ export default function Profile({
       !formData.email.trim() ||
       !formData.password.trim()
     ) {
-      toast.error("Please fill in all fields");
+      toast.error(
+        "Please fill in all fields"
+      );
       return;
     }
 
     const updatedUser = {
-      username: formData.username.trim(),
-      email: formData.email.trim(),
-      password: formData.password,
+      username:
+        formData.username.trim(),
+      email:
+        formData.email.trim(),
+      password:
+        formData.password,
     };
 
     localStorage.setItem(
       "weatherUser",
-      JSON.stringify(updatedUser)
+      JSON.stringify(
+        updatedUser
+      )
     );
 
     setUser(updatedUser);
@@ -113,21 +157,31 @@ export default function Profile({
 
     setEditing(false);
 
-    toast.success("Profile updated!");
+    toast.success(
+      "Profile updated!"
+    );
   };
 
   const handleCancel = () => {
     setFormData({
-      username: user.username || "",
-      email: user.email || "",
-      password: user.password || "",
+      username:
+        user.username || "",
+      email:
+        user.email || "",
+      password:
+        user.password || "",
     });
 
     setEditing(false);
   };
 
-  const handleOverlayClick = (event) => {
-    if (event.target === event.currentTarget) {
+  const handleOverlayClick = (
+    event
+  ) => {
+    if (
+      event.target ===
+      event.currentTarget
+    ) {
       onClose();
     }
   };
@@ -139,9 +193,15 @@ export default function Profile({
   };
 
   return (
-    <Overlay onClick={handleOverlayClick}>
-      <ProfileWrapper>
+    <Overlay
+      $dark={darkMode}
+      onClick={handleOverlayClick}
+    >
+      <ProfileWrapper
+        $dark={darkMode}
+      >
         <CloseButton
+          $dark={darkMode}
           type="button"
           onClick={onClose}
           aria-label="Close"
@@ -149,7 +209,9 @@ export default function Profile({
           <FiX size={24} />
         </CloseButton>
 
-        <Title>My profile</Title>
+        <Title $dark={darkMode}>
+          My profile
+        </Title>
 
         <AvatarWrapper>
           {avatar ? (
@@ -159,11 +221,17 @@ export default function Profile({
             />
           ) : (
             <AvatarPlaceholder>
-              {user.username?.charAt(0).toUpperCase() || "U"}
+              {user.username
+                ?.charAt(0)
+                .toUpperCase() ||
+                "U"}
             </AvatarPlaceholder>
           )}
 
-          <UploadButton htmlFor="avatar-upload">
+          <UploadButton
+            $dark={darkMode}
+            htmlFor="avatar-upload"
+          >
             <FiCamera size={18} />
           </UploadButton>
 
@@ -171,72 +239,118 @@ export default function Profile({
             id="avatar-upload"
             type="file"
             accept="image/*"
-            onChange={handleAvatarChange}
+            onChange={
+              handleAvatarChange
+            }
           />
         </AvatarWrapper>
 
         <Info>
-          <InfoItem>
-            <Label>Username</Label>
+          <InfoItem $dark={darkMode}>
+            <Label $dark={darkMode}>
+              Username
+            </Label>
 
             {editing ? (
               <EditInput
+                $dark={darkMode}
                 type="text"
                 name="username"
-                value={formData.username}
-                onChange={handleChange}
+                value={
+                  formData.username
+                }
+                onChange={
+                  handleChange
+                }
                 placeholder="Username"
               />
             ) : (
-              <Value>
-                {user.username || "—"}
+              <Value $dark={darkMode}>
+                {user.username ||
+                  "—"}
               </Value>
             )}
           </InfoItem>
 
-          <InfoItem>
-            <Label>E-Mail</Label>
+          <InfoItem $dark={darkMode}>
+            <Label $dark={darkMode}>
+              E-Mail
+            </Label>
 
             {editing ? (
               <EditInput
+                $dark={darkMode}
                 type="email"
                 name="email"
-                value={formData.email}
-                onChange={handleChange}
+                value={
+                  formData.email
+                }
+                onChange={
+                  handleChange
+                }
                 placeholder="E-Mail"
               />
             ) : (
-              <Value>
-                {user.email || "—"}
+              <Value $dark={darkMode}>
+                {user.email ||
+                  "—"}
               </Value>
             )}
           </InfoItem>
 
-          <InfoItem>
-            <Label>Password</Label>
+          <InfoItem $dark={darkMode}>
+            <Label $dark={darkMode}>
+              Password
+            </Label>
 
             {editing ? (
               <PasswordWrapper>
                 <EditInput
-                  type={showPassword ? "text" : "password"}
+                  $dark={darkMode}
+                  type={
+                    showPassword
+                      ? "text"
+                      : "password"
+                  }
                   name="password"
-                  value={formData.password}
-                  onChange={handleChange}
+                  value={
+                    formData.password
+                  }
+                  onChange={
+                    handleChange
+                  }
                   placeholder="Password"
                 />
 
                 <PasswordButton
+                  $dark={darkMode}
                   type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  onClick={() =>
+                    setShowPassword(
+                      (prev) =>
+                        !prev
+                    )
+                  }
+                  aria-label={
+                    showPassword
+                      ? "Hide password"
+                      : "Show password"
+                  }
                 >
-                  {showPassword ? <FiEyeOff /> : <FiEye />}
+                  {showPassword ? (
+                    <FiEyeOff />
+                  ) : (
+                    <FiEye />
+                  )}
                 </PasswordButton>
               </PasswordWrapper>
             ) : (
-              <Value>
+              <Value $dark={darkMode}>
                 {user.password
-                  ? "•".repeat(user.password.length)
+                  ? "•".repeat(
+                    user.password
+                      .length
+                  )
                   : "—"}
               </Value>
             )}
@@ -263,16 +377,27 @@ export default function Profile({
         ) : (
           <EditButton
             type="button"
-            onClick={() => setEditing(true)}
+            onClick={() =>
+              setEditing(true)
+            }
           >
             <FiEdit2 size={18} />
             Edit profile
           </EditButton>
         )}
 
+        <ColorButton
+          type="button"
+          onClick={onOpenColor}
+        >
+          <FiDroplet size={18} />
+          Change color
+        </ColorButton>
+
         <LogoutButton
           type="button"
           onClick={handleLogout}
+          $dark={darkMode}
         >
           Log out
         </LogoutButton>

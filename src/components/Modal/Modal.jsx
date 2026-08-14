@@ -17,10 +17,20 @@ import {
   PasswordButton,
 } from "./Modal.styled";
 
+export default function Modal({
+  onClose,
+  onSubmit,
+  darkMode,
+}) {
+  const [showPassword, setShowPassword] =
+    useState(false);
 
-export default function Modal({ onClose, onSubmit }) {
-
-  const [showPassword, setShowPassword] = useState(false);
+  const [accentColor, setAccentColor] =
+    useState(
+      () =>
+        localStorage.getItem("accentColor") ||
+        "#ffb36c"
+    );
 
   const formik = useFormik({
     initialValues: {
@@ -31,7 +41,9 @@ export default function Modal({ onClose, onSubmit }) {
 
     onSubmit: (values, { resetForm }) => {
       if (values.password.length < 8) {
-        toast.error("Password must contain at least 8 characters!");
+        toast.error(
+          "Password must contain at least 8 characters!"
+        );
         return;
       }
 
@@ -43,7 +55,9 @@ export default function Modal({ onClose, onSubmit }) {
           JSON.stringify(values)
         );
 
-        toast.success("Registration successful!");
+        toast.success(
+          "Registration successful!"
+        );
       }
 
       resetForm();
@@ -52,25 +66,44 @@ export default function Modal({ onClose, onSubmit }) {
   });
 
   const handleOverlayClick = (event) => {
-    if (event.target === event.currentTarget) {
+    if (
+      event.target === event.currentTarget
+    ) {
       onClose();
     }
   };
 
   return (
-    <Overlay onClick={handleOverlayClick}>
-      <ModalWrapper>
+    <Overlay
+      $dark={darkMode}
+      $accent={accentColor}
+      onClick={handleOverlayClick}
+    >
+      <ModalWrapper
+        $dark={darkMode}
+        $accent={accentColor}
+      >
         <CloseButton
+          $dark={darkMode}
+          $accent={accentColor}
           type="button"
           onClick={onClose}
-          aria-label="Close">
+          aria-label="Close"
+        >
           <FiX size={24} />
         </CloseButton>
 
-        <Title>Sign up</Title>
+        <Title
+          $dark={darkMode}
+          $accent={accentColor}
+        >
+          Sign up
+        </Title>
 
         <Form onSubmit={formik.handleSubmit}>
           <Input
+            $dark={darkMode}
+            $accent={accentColor}
             type="text"
             name="username"
             placeholder="Username"
@@ -80,6 +113,8 @@ export default function Modal({ onClose, onSubmit }) {
           />
 
           <Input
+            $dark={darkMode}
+            $accent={accentColor}
             type="email"
             name="email"
             placeholder="E-Mail"
@@ -90,7 +125,13 @@ export default function Modal({ onClose, onSubmit }) {
 
           <PasswordWrapper>
             <Input
-              type={showPassword ? "text" : "password"}
+              $dark={darkMode}
+              $accent={accentColor}
+              type={
+                showPassword
+                  ? "text"
+                  : "password"
+              }
               name="password"
               placeholder="Password"
               value={formik.values.password}
@@ -100,22 +141,43 @@ export default function Modal({ onClose, onSubmit }) {
             />
 
             <PasswordButton
+              $dark={darkMode}
+              $accent={accentColor}
               type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              aria-label={showPassword ? "Hide password" : "Show password"}
+              onClick={() =>
+                setShowPassword(
+                  (prev) => !prev
+                )
+              }
+              aria-label={
+                showPassword
+                  ? "Hide password"
+                  : "Show password"
+              }
             >
-              {showPassword ? <FiEyeOff /> : <FiEye />}
+              {showPassword ? (
+                <FiEyeOff />
+              ) : (
+                <FiEye />
+              )}
             </PasswordButton>
           </PasswordWrapper>
 
-          <SubmitButton type="submit">
+          <SubmitButton
+            $accent={accentColor}
+            type="submit"
+          >
             Sign up
           </SubmitButton>
         </Form>
 
-        <LoginText>
+        <LoginText $dark={darkMode}>
           Already have an account?{" "}
-          <LoginLink href="#login">
+          <LoginLink
+            $dark={darkMode}
+            $accent={accentColor}
+            href="#login"
+          >
             Log In
           </LoginLink>
         </LoginText>

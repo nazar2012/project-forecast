@@ -6,9 +6,14 @@ export const ForecastSection = styled.section`
   margin: 10px auto 0;
   padding: 22px 30px 30px;
   box-sizing: border-box;
+
   border-radius: 18px;
-  background: #e9e9e9;
+
+  background: ${({ theme }) => theme.card};
+  color: ${({ theme }) => theme.text};
+
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+
   animation: forecastIn 0.45s
     cubic-bezier(0.22, 1, 0.36, 1);
 
@@ -47,9 +52,11 @@ export const ForecastSection = styled.section`
 
 export const ForecastHeader = styled.div`
   width: 100%;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   margin-bottom: 10px;
 
   @media (max-width: 450px) {
@@ -59,7 +66,9 @@ export const ForecastHeader = styled.div`
 
 export const ForecastTitle = styled.h2`
   margin: 0;
-  color: #111111;
+
+  color: ${({ theme }) => theme.text};
+
   font-size: 20px;
   font-weight: 500;
   line-height: 1.2;
@@ -75,7 +84,9 @@ export const ForecastTitle = styled.h2`
 
 export const ForecastCity = styled.p`
   margin: 5px 0 0;
-  color: #666666;
+
+  color: ${({ theme }) => theme.muted};
+
   font-size: 12px;
   font-weight: 400;
 
@@ -97,12 +108,12 @@ export const CloseButton = styled.button`
   border: none;
   border-radius: 50%;
   background: transparent;
-  color: #111111;
+  color: ${({ theme }) => theme.text};
   cursor: pointer;
   box-sizing: border-box;
   transition:
-    background 0.2s ease,
-    transform 0.2s ease;
+    background 0.25s ease,
+    color 0.25s ease;
 
   span {
     position: absolute;
@@ -117,24 +128,15 @@ export const CloseButton = styled.button`
     font-size: 25px;
     font-weight: 300;
     line-height: 24px;
-    transform: translate(-50%, -53%);
-    transition: transform 0.2s ease;
+    transform: translate(-50%, -53%) rotate(0deg);
+    transform-origin: center;
+    transition:
+      transform 0.3s ease;
   }
 
   &:hover {
-    background: rgba(255, 179, 108, 0.35);
-  }
-
-  &:hover span {
-    transform:
-      translate(-50%, -53%)
-      scale(1.1);
-  }
-
-  &:active span {
-    transform:
-      translate(-50%, -53%)
-      scale(0.9);
+    background: ${({ theme }) => theme.button};
+    transform: rotate(90deg);
   }
 
   @media (max-width: 450px) {
@@ -177,10 +179,12 @@ export const ChartWrapper = styled.div`
 export const ForecastLoading = styled.div`
   width: 100%;
   height: 100%;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #666666;
+
+  color: ${({ theme }) => theme.muted};
   font-size: 13px;
 
   @media (max-width: 450px) {
@@ -191,10 +195,13 @@ export const ForecastLoading = styled.div`
 export const ForecastError = styled.div`
   width: 100%;
   height: 100%;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #666666;
+
+  color: ${({ theme }) => theme.muted};
+
   font-size: 13px;
   text-align: center;
 

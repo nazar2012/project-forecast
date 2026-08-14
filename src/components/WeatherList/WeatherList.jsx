@@ -48,6 +48,8 @@ export default function WeatherList({
   onRefresh,
   onFavorite,
   onDelete,
+  darkMode,
+  userColor,
 }) {
   const [currentTime, setCurrentTime] = useState(
     new Date()
@@ -62,7 +64,6 @@ export default function WeatherList({
   const [selectedMoreCity, setSelectedMoreCity] =
     useState(null);
 
-  // C / F отдельно для каждого города
   const [citiesUnit, setCitiesUnit] = useState({});
 
   useEffect(() => {
@@ -73,7 +74,6 @@ export default function WeatherList({
     return () => clearInterval(timer);
   }, []);
 
-  // GIF в зависимости от погоды
   const getWeatherBackground = (description = "") => {
     const text = description.toLowerCase();
 
@@ -149,7 +149,6 @@ export default function WeatherList({
       weekday: "long",
     });
 
-  // Переключение C / F
   const toggleTemperatureUnit = (cityId) => {
     setCitiesUnit((prev) => ({
       ...prev,
@@ -160,12 +159,10 @@ export default function WeatherList({
     }));
   };
 
-  // Получаем единицу температуры города
   const getCityUnit = (cityId) => {
     return citiesUnit[cityId] || "C";
   };
 
-  // Конвертация температуры
   const convertTemperature = (
     temperature,
     unit
@@ -184,7 +181,7 @@ export default function WeatherList({
   }
 
   return (
-    <WeatherSection>
+    <WeatherSection id="menu">
       <WeatherListWrapper>
         {cities.map((city) => {
           const cityDate = getCityDate(
@@ -205,16 +202,13 @@ export default function WeatherList({
 
           return (
             <WeatherCard key={city.id}>
-              {/* GIF */}
               <WeatherBackground
                 src={background}
                 alt=""
               />
 
-              {/* затемнение */}
               <WeatherOverlay />
 
-              {/* весь контент карточки */}
               <WeatherCardContent>
                 <CardTop>
                   <City>
@@ -303,7 +297,6 @@ export default function WeatherList({
                     <FiHeart />
                   </FavoriteButton>
 
-                  {/* C / F */}
                   <UnitButton
                     type="button"
                     onClick={() =>
@@ -348,33 +341,28 @@ export default function WeatherList({
         })}
       </WeatherListWrapper>
 
-      {/* Почасовой прогноз */}
       {selectedCity && (
         <HourlyForecast
           city={selectedCity}
-          unit={getCityUnit(
-            selectedCity.id
-          )}
-          onClose={() =>
-            setSelectedCity(null)
-          }
+          unit={getCityUnit(selectedCity.id)}
+          darkMode={darkMode}
+          chartColor={userColor}
+          onClose={() => setSelectedCity(null)}
         />
       )}
 
-      {/* Прогноз на 5 дней */}
       {selectedWeeklyCity && (
         <WeeklyForecast
           city={selectedWeeklyCity}
-          unit={getCityUnit(
-            selectedWeeklyCity.id
-          )}
+          unit={getCityUnit(selectedWeeklyCity.id)}
+          darkMode={darkMode}
+          accentColor={userColor}
           onClose={() =>
             setSelectedWeeklyCity(null)
           }
         />
       )}
 
-      {/* Подробнее о погоде */}
       {selectedMoreCity && (
         <MoreWeather
           city={selectedMoreCity}

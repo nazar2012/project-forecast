@@ -2,264 +2,495 @@ import styled from "styled-components";
 
 export const HeaderWrapper = styled.header`
   position: fixed;
+
   top: 0;
   left: 0;
-  z-index: 1000;
+
   width: 100%;
-  height: 70px;
+
+  min-height: ${({ $scrolled }) =>
+    $scrolled ? "62px" : "72px"};
+
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 40px;
-  background: #ffffff;
-  border-bottom: 1px solid #eeeeee;
+
+  padding: ${({ $scrolled }) =>
+    $scrolled ? "0 32px" : "0 40px"};
+
+  z-index: 1000;
+
   box-sizing: border-box;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 
-  @media screen and (min-width: 564px) {
-    height: 70px;
-    padding: 0 32px;
-  }
+  background: ${({ theme }) =>
+    theme.background};
 
-  @media screen and (min-width: 1160px) {
-    height: 82px;
-    padding: 0 64px;
+  color: ${({ theme }) =>
+    theme.text};
+
+  box-shadow: ${({ $scrolled }) =>
+    $scrolled
+      ? "0 6px 22px rgba(0, 0, 0, 0.16)"
+      : "0 4px 16px rgba(0, 0, 0, 0.12)"};
+
+  backdrop-filter: ${({ $scrolled }) =>
+    $scrolled ? "blur(10px)" : "none"};
+
+  transition:
+    min-height 0.3s ease,
+    padding 0.3s ease,
+    background 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease,
+    backdrop-filter 0.3s ease;
+
+  @media (max-width: 768px) {
+    min-height: ${({ $scrolled }) =>
+    $scrolled ? "58px" : "64px"};
+
+    padding: ${({ $scrolled }) =>
+    $scrolled ? "0 16px" : "0 20px"};
   }
 `;
 
 export const Logo = styled.a`
-  width: 34px;
-  height: 22px;
   display: flex;
   align-items: center;
+
   text-decoration: none;
 
   img {
-    width: 50px;
-    height: 50px;
-    display: block;
-    object-fit: contain;
-  }
-
-  @media screen and (min-width: 564px) {
-    width: 54px;
-    height: 36px;
-
-    img {
-      width: 54px;
-      height: 36px;
-    }
-  }
-
-  @media screen and (min-width: 1160px) {
     width: 82px;
     height: 56px;
 
+    display: block;
+
+    filter: ${({ $dark }) =>
+    $dark
+      ? "brightness(0) invert(1)"
+      : "none"};
+
+    transition:
+      transform 0.3s ease,
+      filter 0.3s ease;
+  }
+
+  &:hover img {
+    transform: translateY(-2px) scale(1.06);
+  }
+
+  &:active img {
+    transform: translateY(0) scale(0.98);
+  }
+
+  @media (max-width: 768px) {
     img {
-      width: 82px;
-      height: 56px;
+      width: 80px;
     }
   }
 `;
 
 export const Navigation = styled.nav`
-  display: none;
+  display: flex;
+  align-items: center;
 
-  @media screen and (min-width: 564px) {
-    display: flex;
-    align-items: center;
-    gap: 46px;
-    margin-left: 40px;
-    margin-right: auto;
+  gap: 30px;
+
+  margin-left: 130px;
+  margin-right: auto;
+
+  @media (max-width: 768px) {
+    display: none;
   }
 
-  @media screen and (min-width: 1160px) {
-    gap: 42px;
-    margin-left: 150px;
+  @media (min-width: 769px) and (max-width: 1100px) {
+    margin-left: 35px;
+    gap: 22px;
   }
 `;
 
 export const NavLink = styled.a`
   position: relative;
-  color: #111111;
-  font-size: 10px;
-  font-weight: 500;
+
+  color: ${({ theme }) => theme.text};
+
+  font-size: 14px;
+  font-weight: 400;
+
   text-decoration: none;
 
-  &:hover {
-    color: #ff9d4d;
+  padding: 5px 0;
+
+  transition:
+    color 0.25s ease,
+    opacity 0.25s ease,
+    transform 0.25s ease;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    background: ${({ theme }) =>
+    theme.button};
+    border-radius: 10px;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s ease;
   }
 
-  @media screen and (min-width: 1160px) {
-    font-size: 14px;
+  &:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+  }
+
+  &:hover::after {
+    transform: scaleX(1);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
+export const DesktopThemeToggle = styled.div`
+  display: flex;
+  align-items: center;
+
+  margin-right: 25px;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+
+  @media (min-width: 769px) and (max-width: 1100px) {
+    margin-right: 18px;
   }
 `;
 
 export const Actions = styled.div`
-  display: none;
+  display: flex;
+  align-items: center;
 
-  @media screen and (min-width: 564px) {
-    display: flex;
-    align-items: center;
-    gap: 25px;
-  }
+  gap: 15px;
 
-  @media screen and (min-width: 1160px) {
-    gap: 20px;
+  @media (max-width: 768px) {
+    display: none;
   }
 `;
 
 export const SignUpButton = styled.button`
-  width: 74px;
-  height: 38px;
+  height: 36px;
+  padding: 0 18px;
   border: none;
-  border-radius: 9px;
-  background: #ffb36c;
+  border-radius: 10px;
+  background: ${({ theme }) => theme.button};
   color: #111111;
-  font-size: 10px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 400;
   cursor: pointer;
-
+  box-shadow:
+    0 4px 12px
+    rgba(0, 0, 0, 0.08);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
   &:hover {
-    background: #ffa451;
+    transform:
+      translateY(-2px)
+      scale(1.03);
+    box-shadow:
+      0 8px 20px
+      rgba(0, 0, 0, 0.14);
   }
 
-  @media screen and (min-width: 564px) {
-    width: auto;
-    height: auto;
-    padding: 8px 16px;
-  }
+&:active {
+  transform: scale(0.94);
 
-  @media screen and (min-width: 1160px) {
-    width: 74px;
-    height: 38px;
-    padding: 0;
-    font-size: 13px;
-  }
+  box-shadow:
+    0 2px 6px
+    rgba(0, 0, 0, 0.1);
+}
 `;
 
 export const UserIcon = styled.div`
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  border: 1px solid #e7e7e7;
+
   border-radius: 50%;
-  background: #f5f5f5;
+
+  background: ${({ theme }) => theme.secondary};
+
   cursor: pointer;
+  overflow: hidden;
+
+  position: relative;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.3s ease,
+    background 0.3s ease;
+
+  &:hover {
+    transform: scale(1.08);
+
+    box-shadow:
+      0 0 0 3px
+        ${({ theme }) => `${theme.accent}33`},
+      0 0 18px
+        ${({ theme }) => `${theme.accent}88`},
+      0 5px 20px
+        rgba(0, 0, 0, 0.18);
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  &::after {
+    content: "";
+
+    position: absolute;
+    inset: -2px;
+
+    border-radius: 50%;
+
+    border: 1px solid
+      ${({ theme }) => theme.accent};
+
+    opacity: 0;
+    transform: scale(0.8);
+
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease;
+
+    pointer-events: none;
+  }
+
+  &:hover::after {
+    opacity: 0.7;
+    transform: scale(1);
+  }
 
   img {
     width: 100%;
     height: 100%;
+    display: block;
     object-fit: cover;
-  }
-
-  @media screen and (min-width: 1160px) {
-    width: 42px;
-    height: 42px;
+    object-position: center;
+    position: relative;
+    z-index: 2;
   }
 `;
 
 export const UserAvatar = styled.img`
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
+
   display: block;
+
   object-fit: cover;
+  object-position: center;
+
+  border-radius: 50%;
 `;
 
 export const MobileMenuButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
+  display: none;
+
+  margin-left: auto;
+
   border: none;
-  background: none;
-  color: #111111;
-  font-size: 13px;
-  font-weight: 500;
+  background: transparent;
+
+  color: ${({ theme }) => theme.text};
+
+  font-size: 14px;
+
   cursor: pointer;
 
-  @media screen and (min-width: 564px) {
-    display: none;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    opacity: 0.7;
+  }
+
+  &:active {
+    transform: scale(0.94);
+  } 
+
+  @media (max-width: 768px) {
+    display: block;
   }
 `;
 
 export const MobileNavigation = styled.div`
   position: absolute;
-  top: 70px;
-  left: 0;
-  width: 100%;
-  height: 268px;
-  display: flex;
-  justify-content: space-between;
-  padding: 48px 50px 40px;
-  background: #e9e9e9;
-  box-sizing: border-box;
-  z-index: 999;
 
-  box-shadow: inset 0 20px 30px rgba(0, 0, 0, 0.25); 
-  @media screen and (min-width: 564px) {
+  top: 64px;
+  left: 0;
+
+  width: 100%;
+
+  padding: 20px;
+
+  box-sizing: border-box;
+
+  background: ${({ theme }) => theme.background};
+  color: ${({ theme }) => theme.text};
+
+  border-top: 1px solid
+    ${({ theme }) => theme.secondary};
+
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.12);
+
+  z-index: 100;
+
+  transform-origin: top;
+
+  transform: ${({ $open }) =>
+    $open
+      ? "translateY(0) scaleY(1)"
+      : "translateY(-12px) scaleY(0.96)"};
+
+  opacity: ${({ $open }) =>
+    $open ? 1 : 0};
+
+  visibility: ${({ $open }) =>
+    $open ? "visible" : "hidden"};
+
+  transition:
+    transform 0.35s
+      cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.25s ease,
+    visibility 0.35s ease;
+
+  @media (min-width: 769px) {
     display: none;
   }
 `;
 
+export const MobileMenuContent = styled.div`
+  display: grid;
+
+  grid-template-columns: 1fr auto;
+
+  align-items: start;
+
+  column-gap: 20px;
+`;
+
 export const MobileLinks = styled.nav`
   display: flex;
+
   flex-direction: column;
-  gap: 36px;
 
-  ${NavLink} {
-    font-size: 16px;
-    font-weight: 500;
-    color: #111111;
-
-    &::after {
-      display: none;
-    }
-  }
+  gap: 15px;
 `;
 
 export const MobileActions = styled.div`
   display: flex;
+
   flex-direction: column;
-  align-items: center;
-  gap: 28px;
+
+  align-items: flex-end;
+
+  gap: 15px;
 `;
 
 export const MobileUserIcon = styled.div`
-  width: 54px;
-  height: 54px;
+  width: 42px;
+  height: 42px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  overflow: hidden;
   border-radius: 50%;
-  background: #59698f;
+
+  background: ${({ theme }) => theme.secondary};
+
   cursor: pointer;
+  overflow: hidden;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+
+  &:hover {
+    transform: scale(1.06);
+
+    box-shadow:
+      0 5px 15px
+      rgba(0, 0, 0, 0.15);
+  }
 
   img {
     width: 100%;
     height: 100%;
+
+    display: block;
+
     object-fit: cover;
+    object-position: center;
   }
 `;
 
 export const MobileSignUpButton = styled.button`
-  width: 110px;
-  height: 44px;
+  height: 36px;
+
+  padding: 0 18px;
+
   border: none;
-  border-radius: 14px;
-  background: #ffb36c;
+  border-radius: 10px;
+
+  background: ${({ theme }) => theme.button};
   color: #111111;
-  font-size: 16px;
-  font-weight: 500;
+
+  font-size: 13px;
+
   cursor: pointer;
 
+  box-shadow:
+    0 4px 12px
+    rgba(0, 0, 0, 0.08);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+
   &:hover {
-    background: #ffa451;
+    transform:
+      translateY(-2px)
+      scale(1.03);
+
+    box-shadow:
+      0 8px 20px
+      rgba(0, 0, 0, 0.14);
   }
+
+&:active {
+  transform: scale(0.94);
+
+  box-shadow:
+    0 2px 6px
+    rgba(0, 0, 0, 0.1);
+}
+`;
+
+export const MobileTheme = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
 `;

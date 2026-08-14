@@ -5,7 +5,16 @@ export const NewsSection = styled.section`
   padding: 50px 52px;
   box-sizing: border-box;
   overflow: hidden;
-  background: #ffffff;
+
+  background: ${({ $dark }) =>
+    $dark ? "#111111" : "#ffffff"};
+
+  color: ${({ $dark }) =>
+    $dark ? "#ffffff" : "#111111"};
+
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
 
   @media (max-width: 900px) {
     padding: 40px 30px;
@@ -42,10 +51,15 @@ export const NewsContent = styled.div`
 
 export const NewsTitle = styled.h2`
   margin: 0;
-  color: #111111;
+
+  color: ${({ $dark }) =>
+    $dark ? "#ffffff" : "#111111"};
+
   font-size: 26px;
   font-weight: 500;
   line-height: 1.2;
+
+  transition: color 0.3s ease;
 
   @media (max-width: 900px) {
     font-size: 24px;
@@ -64,8 +78,10 @@ export const CategoryButtons = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
+
   margin-top: 30px;
   margin-bottom: 38px;
+
   flex-wrap: wrap;
 
   @media (max-width: 600px) {
@@ -77,22 +93,30 @@ export const CategoryButtons = styled.div`
 
 export const CategoryButton = styled.button`
   height: 42px;
+
   padding: 0 20px;
 
   border: 1px solid
-    ${({ $active }) =>
-      $active
-        ? "#ffb36c"
+    ${({ $active, $dark, $accent }) =>
+    $active
+      ? $accent
+      : $dark
+        ? "#444444"
         : "#dddddd"};
 
   border-radius: 999px;
 
-  background: ${({ $active }) =>
+  background: ${({ $active, $dark, $accent }) =>
     $active
-      ? "#ffb36c"
-      : "#ffffff"};
+      ? $accent
+      : $dark
+        ? "#222222"
+        : "#ffffff"};
 
-  color: #111111;
+  color: ${({ $active, $dark }) =>
+    $active || !$dark
+      ? "#111111"
+      : "#ffffff"};
 
   font-size: 15px;
   font-weight: 500;
@@ -102,16 +126,18 @@ export const CategoryButton = styled.button`
   transition:
     background 0.25s ease,
     border-color 0.25s ease,
+    color 0.25s ease,
     transform 0.25s ease,
     box-shadow 0.25s ease;
 
   &:hover {
-    border-color: #ffb36c;
+    border-color: ${({ $accent }) =>
+    $accent};
+
     transform: translateY(-2px);
 
-    box-shadow:
-      0 6px 16px
-      rgba(255, 179, 108, 0.2);
+    box-shadow: ${({ $accent }) =>
+    `0 6px 16px ${$accent}33`};
   }
 
   &:active {
@@ -207,11 +233,14 @@ export const NewsCardImage = styled.img`
 export const NewsCardTitle = styled.h3`
   margin: 20px 0 0;
 
-  color: #111111;
+  color: ${({ $dark }) =>
+    $dark ? "#ffffff" : "#111111"};
 
   font-size: 19px;
   font-weight: 500;
   line-height: 1.25;
+
+  transition: color 0.3s ease;
 
   @media (max-width: 900px) {
     font-size: 18px;
@@ -243,7 +272,8 @@ export const NewsButton = styled.button`
   border: none;
   border-radius: 12px;
 
-  background: #ffb36c;
+  background: ${({ $accent }) =>
+    $accent};
 
   color: #111111;
 
@@ -259,13 +289,13 @@ export const NewsButton = styled.button`
     opacity 0.25s ease;
 
   &:hover {
-    background: #ffa45a;
+    background: ${({ $accent }) =>
+    $accent};
 
     transform: translateY(-2px);
 
-    box-shadow:
-      0 8px 20px
-      rgba(255, 179, 108, 0.3);
+    box-shadow: ${({ $accent }) =>
+    `0 8px 20px ${$accent}4d`};
   }
 
   &:active {
@@ -298,11 +328,8 @@ export const NewsButton = styled.button`
   @media (max-width: 600px) {
     width: 100%;
     max-width: 280px;
-
     height: 46px;
-
     padding: 0 25px;
-
     font-size: 15px;
   }
 

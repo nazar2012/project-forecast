@@ -32,14 +32,9 @@ export default function MoreWeather({
   unit = "C",
   onClose,
 }) {
-  const [weather, setWeather] =
-    useState(null);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [error, setError] =
-    useState(false);
+  const [weather, setWeather] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const loadWeather = async () => {
@@ -47,10 +42,9 @@ export default function MoreWeather({
         setLoading(true);
         setError(false);
 
-        const weatherResponse =
-          await fetch(
-            `https://api.openweathermap.org/data/2.5/weather?lat=${city.latitude}&lon=${city.longitude}&appid=${API_KEY}&units=metric`
-          );
+        const weatherResponse = await fetch(
+          `https://api.openweathermap.org/data/2.5/weather?lat=${city.latitude}&lon=${city.longitude}&appid=${API_KEY}&units=metric`
+        );
 
         if (!weatherResponse.ok) {
           throw new Error(
@@ -61,10 +55,9 @@ export default function MoreWeather({
         const currentWeather =
           await weatherResponse.json();
 
-        const forecastResponse =
-          await fetch(
-            `https://api.openweathermap.org/data/2.5/forecast?lat=${city.latitude}&lon=${city.longitude}&appid=${API_KEY}&units=metric`
-          );
+        const forecastResponse = await fetch(
+          `https://api.openweathermap.org/data/2.5/forecast?lat=${city.latitude}&lon=${city.longitude}&appid=${API_KEY}&units=metric`
+        );
 
         if (!forecastResponse.ok) {
           throw new Error(
@@ -79,17 +72,13 @@ export default function MoreWeather({
 
         const todayForecast =
           forecast.list.filter((item) => {
-            const date = new Date(
-              item.dt * 1000
-            );
+            const date = new Date(item.dt * 1000);
 
             return (
-              date.getDate() ===
-                today.getDate() &&
-              date.getMonth() ===
-                today.getMonth() &&
+              date.getDate() === today.getDate() &&
+              date.getMonth() === today.getMonth() &&
               date.getFullYear() ===
-                today.getFullYear()
+              today.getFullYear()
             );
           });
 
@@ -126,6 +115,12 @@ export default function MoreWeather({
 
           visibility:
             currentWeather.visibility,
+          sunrise:
+            currentWeather.sys.sunrise,
+          sunset:
+            currentWeather.sys.sunset,
+          timezone:
+            currentWeather.timezone,
         });
       } catch (error) {
         console.error(
@@ -144,9 +139,7 @@ export default function MoreWeather({
 
   const convertTemperature = (temperature) => {
     if (unit === "F") {
-      return (
-        (temperature * 9) / 5 + 32
-      );
+      return (temperature * 9) / 5 + 32;
     }
 
     return temperature;
@@ -162,6 +155,18 @@ export default function MoreWeather({
     }
 
     return hot;
+  };
+
+  const formatSunTime = (unixTime, timezone) => {
+    if (!unixTime) {
+      return "--:--";
+    }
+
+    const localTime = new Date(
+      (unixTime + timezone) * 1000
+    );
+
+    return localTime.toISOString().slice(11, 16);
   };
 
   return (
@@ -226,21 +231,14 @@ export default function MoreWeather({
 
             <MoreWeatherCard>
               <MoreWeatherLabel>
-                Min °{unit}
+                Min / Max
               </MoreWeatherLabel>
 
               <MoreWeatherValue>
                 {convertTemperature(
                   weather.minTemp
                 ).toFixed(1)}
-                °{unit}
-              </MoreWeatherValue>
-
-              <MoreWeatherLabel>
-                Max °{unit}
-              </MoreWeatherLabel>
-
-              <MoreWeatherValue>
+                ° /{" "}
                 {convertTemperature(
                   weather.maxTemp
                 ).toFixed(1)}
@@ -309,8 +307,8 @@ export default function MoreWeather({
                 {weather.visibility >= 10000
                   ? "Unlimited"
                   : `${(
-                      weather.visibility / 1000
-                    ).toFixed(1)} km`}
+                    weather.visibility / 1000
+                  ).toFixed(1)} km`}
               </MoreWeatherValue>
 
               <MoreWeatherIcon>
@@ -318,6 +316,40 @@ export default function MoreWeather({
                   src={visibility}
                   alt="Visibility"
                 />
+              </MoreWeatherIcon>
+            </MoreWeatherCard>
+
+            <MoreWeatherCard>
+              <MoreWeatherLabel>
+                Sunrise
+              </MoreWeatherLabel>
+
+              <MoreWeatherValue>
+                {formatSunTime(
+                  weather.sunrise,
+                  weather.timezone
+                )}
+              </MoreWeatherValue>
+
+              <MoreWeatherIcon>
+                <span>🌅</span>
+              </MoreWeatherIcon>
+            </MoreWeatherCard>
+
+            <MoreWeatherCard>
+              <MoreWeatherLabel>
+                Sunset
+              </MoreWeatherLabel>
+
+              <MoreWeatherValue>
+                {formatSunTime(
+                  weather.sunset,
+                  weather.timezone
+                )}
+              </MoreWeatherValue>
+
+              <MoreWeatherIcon>
+                <span>🌇</span>
               </MoreWeatherIcon>
             </MoreWeatherCard>
           </MoreWeatherGrid>

@@ -33,10 +33,69 @@ Chart.register(
 const API_KEY =
   import.meta.env.VITE_OPENWEATHER_API_KEY;
 
+const hexToRgba = (hex, alpha = 0.08) => {
+  if (!hex) {
+    return `rgba(255, 179, 108, ${alpha})`;
+  }
+
+  if (
+    hex.startsWith("rgb(")
+  ) {
+    return hex.replace(
+      "rgb(",
+      "rgba("
+    ).replace(
+      ")",
+      `, ${alpha})`
+    );
+  }
+
+  if (
+    hex.startsWith("rgba(")
+  ) {
+    return hex.replace(
+      /[\d.]+\)$/g,
+      `${alpha})`
+    );
+  }
+
+  let value = hex.replace("#", "");
+
+  if (value.length === 3) {
+    value = value
+      .split("")
+      .map((char) => char + char)
+      .join("");
+  }
+
+  if (value.length !== 6) {
+    return `rgba(255, 179, 108, ${alpha})`;
+  }
+
+  const r = parseInt(
+    value.substring(0, 2),
+    16
+  );
+
+  const g = parseInt(
+    value.substring(2, 4),
+    16
+  );
+
+  const b = parseInt(
+    value.substring(4, 6),
+    16
+  );
+
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
 export default function HourlyForecast({
   city,
   unit = "C",
   onClose,
+  darkMode = false,
+  chartColor = "#ffb36c",
 }) {
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
@@ -104,28 +163,59 @@ export default function HourlyForecast({
     }
 
     const labels = forecast.map((item) => {
-      const date = new Date(item.dt * 1000);
+      const date = new Date(
+        item.dt * 1000
+      );
 
-      return date.toLocaleTimeString("en-US", {
-        hour: "numeric",
-        hour12: true,
-      });
+      return date.toLocaleTimeString(
+        "en-US",
+        {
+          hour: "numeric",
+          hour12: true,
+        }
+      );
     });
 
-    const temperatures = forecast.map((item) => {
-      const temperature = item.main.temp;
+    const temperatures = forecast.map(
+      (item) => {
+        const temperature =
+          item.main.temp;
 
-      if (unit === "F") {
-        return Math.round(
-          (temperature * 9) / 5 + 32
-        );
+        if (unit === "F") {
+          return Math.round(
+            (temperature * 9) / 5 + 32
+          );
+        }
+
+        return Math.round(temperature);
       }
+    );
 
-      return Math.round(temperature);
-    });
+    /*
+     * Эти цвета зависят от darkMode.
+     * Они относятся ТОЛЬКО к интерфейсу графика.
+     */
+    const textColor = darkMode
+      ? "#ffffff"
+      : "#111111";
+
+    const gridColor = darkMode
+      ? "rgba(255, 255, 255, 0.08)"
+      : "rgba(17, 17, 17, 0.08)";
+
+    /*
+     * А ЭТИ цвета всегда принадлежат пользователю.
+     * darkMode здесь вообще не участвует.
+     */
+    const lineColor = chartColor;
+
+    const fillColor =
+      hexToRgba(chartColor, 0.08);
 
     const ctx =
-      canvasRef.current.getContext("2d");
+      canvasRef.current.getContext(
+        "2d"
+      );
 
     chartRef.current = new Chart(ctx, {
       type: "line",
@@ -137,14 +227,26 @@ export default function HourlyForecast({
           {
             data: temperatures,
 
-            borderColor: "#ffb36c",
+            /*
+             * Линия = цвет пользователя
+             */
+            borderColor: lineColor,
+
             borderWidth: 2,
 
-            backgroundColor:
-              "rgba(255, 179, 108, 0.08)",
+            /*
+             * Заливка = цвет пользователя
+             */
+            backgroundColor: fillColor,
 
-            pointBackgroundColor: "#ffb36c",
-            pointBorderColor: "#ffb36c",
+            /*
+             * Точки = цвет пользователя
+             */
+            pointBackgroundColor:
+              lineColor,
+
+            pointBorderColor:
+              lineColor,
 
             pointRadius: 3,
             pointHoverRadius: 5,
@@ -178,16 +280,27 @@ export default function HourlyForecast({
             enabled: true,
             displayColors: false,
 
-            backgroundColor: "#111111",
-            titleColor: "#ffffff",
-            bodyColor: "#ffffff",
+            backgroundColor: darkMode
+              ? "#ffffff"
+              : "#111111",
+
+            titleColor: darkMode
+              ? "#111111"
+              : "#ffffff",
+
+            bodyColor: darkMode
+              ? "#111111"
+              : "#ffffff",
 
             padding: 10,
             cornerRadius: 8,
 
             callbacks: {
               title: (items) => {
-                return items[0]?.label || "";
+                return (
+                  items[0]?.label ||
+                  ""
+                );
               },
 
               label: (context) => {
@@ -207,8 +320,11 @@ export default function HourlyForecast({
               display: false,
             },
 
+            /*
+             * Время = darkMode
+             */
             ticks: {
-              color: "#111111",
+              color: textColor,
 
               font: {
                 size: 9,
@@ -221,16 +337,21 @@ export default function HourlyForecast({
 
           y: {
             grid: {
-              color:
-                "rgba(17, 17, 17, 0.08)",
+              /*
+               * Сетка = darkMode
+               */
+              color: gridColor,
             },
 
             border: {
               display: false,
             },
 
+            /*
+             * Цифры = darkMode
+             */
             ticks: {
-              color: "#111111",
+              color: textColor,
 
               font: {
                 size: 9,
@@ -255,6 +376,8 @@ export default function HourlyForecast({
     loading,
     error,
     unit,
+    darkMode,
+    chartColor,
   ]);
 
   return (

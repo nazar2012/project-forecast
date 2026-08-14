@@ -1,14 +1,19 @@
 import styled from "styled-components";
 
 export const AppWrapper = styled.div`
-  width: 100%;
   min-height: 100vh;
-  padding-top: 82px;
-  box-sizing: border-box;
 
-  @media screen and (max-width: 563px) {
-    padding-top: 70px;
-  }
+  background: ${({ theme }) =>
+    theme.background};
+
+  color: ${({ theme }) =>
+    theme.text};
+
+  transition:
+    background-color 0.6s ease,
+    color 0.6s ease;
+
+  overflow-x: hidden;
 `;
 
 export const Main = styled.main`
