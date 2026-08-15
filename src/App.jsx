@@ -12,6 +12,7 @@ import Profile from "./components/Profile/Profile";
 import WeatherMap from "./components/WeatherMap/WeatherMap";
 import ColorModal from "./components/ColorModal/ColorModal";
 import BackToTop from "./components/BackToTop/BackToTop";
+// import WeatherTest from "./components/WeatherTest/WeatherTest";
 
 import { GlobalStyle } from "./GlobalStyle";
 import { AppWrapper } from "./App.styled";
@@ -409,7 +410,6 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
-
       <AppWrapper>
         <Header
           user={user}

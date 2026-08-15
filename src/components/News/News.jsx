@@ -451,16 +451,11 @@ export default function News({
                       key={article.url}
                     >
                       <NewsCardImage
-                        src={
-                          article.urlToImage
-                        }
-                        alt={
-                          article.title ||
-                          "News"
-                        }
+                        src={article.urlToImage || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfDPpcnj2HXmyTmKhnzxWy1UrVb9ySnJmvSvWpw0_yRw&s=10"}
+                        alt={article.title || "News"}
                         onError={(event) => {
-                          event.currentTarget.style.display =
-                            "none";
+                          event.currentTarget.onerror = null;
+                          event.currentTarget.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfDPpcnj2HXmyTmKhnzxWy1UrVb9ySnJmvSvWpw0_yRw&s=10";
                         }}
                       />
 

@@ -89,7 +89,7 @@ export default function ColorModal({
 
     const suggestions =
         input.trim() === ""
-            ? []
+            ? COLORS
             : COLORS.filter((item) =>
                 item.name
                     .toLowerCase()
@@ -157,42 +157,40 @@ export default function ColorModal({
                     onChange={handleInputChange}
                 />
 
-                {input.trim() !== "" && (
-                    <ColorSuggestions>
-                        {suggestions.length > 0 ? (
-                            suggestions.map((item) => (
-                                <ColorSuggestion
-                                    key={item.name}
-                                    type="button"
-                                    $selected={
-                                        color === item.value
-                                    }
-                                    onClick={() =>
-                                        handleSelect(item)
-                                    }
-                                >
-                                    <ColorSquare
-                                        $color={item.value}
-                                    />
+                <ColorSuggestions>
+                    {suggestions.length > 0 ? (
+                        suggestions.map((item) => (
+                            <ColorSuggestion
+                                key={item.name}
+                                type="button"
+                                $selected={
+                                    color === item.value
+                                }
+                                onClick={() =>
+                                    handleSelect(item)
+                                }
+                            >
+                                <ColorSquare
+                                    $color={item.value}
+                                />
 
-                                    <ColorName>
-                                        {item.name}
-                                    </ColorName>
+                                <ColorName>
+                                    {item.name}
+                                </ColorName>
 
-                                    {color === item.value && (
-                                        <CheckIcon>
-                                            <FiCheck />
-                                        </CheckIcon>
-                                    )}
-                                </ColorSuggestion>
-                            ))
-                        ) : (
-                            <NoResults>
-                                No colors found
-                            </NoResults>
-                        )}
-                    </ColorSuggestions>
-                )}
+                                {color === item.value && (
+                                    <CheckIcon>
+                                        <FiCheck />
+                                    </CheckIcon>
+                                )}
+                            </ColorSuggestion>
+                        ))
+                    ) : (
+                        <NoResults>
+                            No colors found
+                        </NoResults>
+                    )}
+                </ColorSuggestions>
 
                 <ApplyButton
                     type="button"

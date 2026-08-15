@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import {
   Overlay,
   ProfileWrapper,
+  Glow,
   CloseButton,
   Title,
   AvatarWrapper,
@@ -32,6 +33,10 @@ import {
   LogoutButton,
   ColorButton,
 } from "./Profile.styled";
+
+const accentColor =
+  localStorage.getItem("accentColor") ||
+  "#ffb36c";
 
 export default function Profile({
   onClose,
@@ -200,6 +205,20 @@ export default function Profile({
       <ProfileWrapper
         $dark={darkMode}
       >
+        <Glow
+          $accent={accentColor}
+          $position="top"
+        />
+
+        <Glow
+          $accent={accentColor}
+          $position="bottom"
+        />
+
+        <Glow
+          $accent={accentColor}
+          $position="center"
+        />
         <CloseButton
           $dark={darkMode}
           type="button"
@@ -209,7 +228,10 @@ export default function Profile({
           <FiX size={24} />
         </CloseButton>
 
-        <Title $dark={darkMode}>
+        <Title
+          $dark={darkMode}
+          $accent={accentColor}
+        >
           My profile
         </Title>
 

@@ -1,3 +1,5 @@
+// WeatherList.jsx
+
 import { useEffect, useState } from "react";
 import {
   FiRefreshCw,
@@ -23,6 +25,7 @@ import {
   WeatherCard,
   WeatherBackground,
   WeatherOverlay,
+  WeatherGlass,
   WeatherCardContent,
   CardTop,
   City,
@@ -176,6 +179,12 @@ export default function WeatherList({
     return Math.round(temperature);
   };
 
+  const closeAllForecasts = () => {
+    setSelectedCity(null);
+    setSelectedWeeklyCity(null);
+    setSelectedMoreCity(null);
+  };
+
   if (cities.length === 0) {
     return null;
   }
@@ -201,13 +210,22 @@ export default function WeatherList({
             );
 
           return (
-            <WeatherCard key={city.id}>
+            <WeatherCard
+              key={city.id}
+              $accent={userColor}
+              $dark={darkMode}
+            >
               <WeatherBackground
                 src={background}
                 alt=""
               />
 
               <WeatherOverlay />
+
+              <WeatherGlass
+                $accent={userColor}
+                $dark={darkMode}
+              />
 
               <WeatherCardContent>
                 <CardTop>
@@ -227,6 +245,7 @@ export default function WeatherList({
                 <ForecastButtons>
                   <ForecastButton
                     type="button"
+                    $accent={userColor}
                     onClick={() => {
                       setSelectedCity(city);
                       setSelectedWeeklyCity(null);
@@ -238,6 +257,7 @@ export default function WeatherList({
 
                   <ForecastButton
                     type="button"
+                    $accent={userColor}
                     onClick={() => {
                       setSelectedWeeklyCity(city);
                       setSelectedCity(null);
@@ -290,6 +310,7 @@ export default function WeatherList({
                   <FavoriteButton
                     type="button"
                     $active={isFavorite}
+                    $accent={userColor}
                     onClick={() =>
                       onFavorite(city.id)
                     }
@@ -299,6 +320,7 @@ export default function WeatherList({
 
                   <UnitButton
                     type="button"
+                    $accent={userColor}
                     onClick={() =>
                       toggleTemperatureUnit(
                         city.id
@@ -311,6 +333,7 @@ export default function WeatherList({
 
                   <MoreButton
                     type="button"
+                    $accent={userColor}
                     onClick={() => {
                       setSelectedMoreCity(
                         selectedMoreCity?.id ===

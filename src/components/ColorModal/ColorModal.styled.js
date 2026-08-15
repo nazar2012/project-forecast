@@ -13,12 +13,13 @@ export const Overlay = styled.div`
   padding: 16px;
   box-sizing: border-box;
 
-  background: ${({ theme }) =>
-        theme.background === "#111111"
-            ? "rgba(0, 0, 0, 0.72)"
-            : "rgba(17, 17, 17, 0.45)"};
+background: ${({ theme }) =>
+    theme.background === "#111111"
+      ? "rgba(0, 0, 0, 0.35)"
+      : "rgba(17, 17, 17, 0.18)"};
 
   backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 
   animation: colorOverlayAppear 0.25s ease;
 
@@ -43,42 +44,85 @@ export const ModalWrapper = styled.div`
 
   box-sizing: border-box;
 
+  /* настоящее полупрозрачное стекло */
   background: ${({ theme }) =>
-        theme.background};
+    theme.background === "#111111"
+      ? "rgba(255, 255, 255, 0.08)"
+      : "rgba(255, 255, 255, 0.32)"};
 
-  color: ${({ theme }) =>
-        theme.text};
+  color: ${({ theme }) => theme.text};
 
   border: 1px solid
     ${({ theme }) =>
-        theme.secondary};
+    theme.background === "#111111"
+      ? "rgba(255, 255, 255, 0.22)"
+      : "rgba(255, 255, 255, 0.7)"};
 
-  border-radius: 16px;
+  border-radius: 20px;
+
+  /* главный эффект стекла */
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
 
   box-shadow:
-    0 20px 60px
-    rgba(0, 0, 0, 0.2);
+    0 25px 70px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0
+      rgba(255, 255, 255, 0.06);
 
-  animation: colorModalAppear 0.3s
+  overflow: hidden;
+
+  animation: glassAppear 0.4s
     cubic-bezier(0.22, 1, 0.36, 1);
 
   transition:
     background 0.3s ease,
-    color 0.3s ease,
     border-color 0.3s ease,
     box-shadow 0.3s ease;
 
-  @keyframes colorModalAppear {
+  /* мягкий блик внутри стекла */
+  &::before {
+    content: "";
+
+    position: absolute;
+
+    top: -50%;
+    left: -30%;
+
+    width: 160%;
+    height: 100%;
+
+    background: linear-gradient(
+      120deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.12) 50%,
+      transparent 70%
+    );
+
+    pointer-events: none;
+
+    transform: rotate(-8deg);
+  }
+
+  /* весь настоящий контент поверх блика */
+  & > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  @keyframes glassAppear {
     from {
       opacity: 0;
-      transform: translateY(15px)
-        scale(0.96);
+      transform: translateY(20px) scale(0.94);
+      backdrop-filter: blur(0);
     }
 
     to {
       opacity: 1;
-      transform: translateY(0)
-        scale(1);
+      transform: translateY(0) scale(1);
+      backdrop-filter: blur(22px)
+        saturate(150%);
     }
   }
 
@@ -90,7 +134,8 @@ export const ModalWrapper = styled.div`
   @media screen and (min-width: 1160px) {
     max-width: 460px;
     padding: 36px;
-    border-radius: 18px;
+
+    border-radius: 22px;
   }
 `;
 
@@ -113,10 +158,10 @@ export const CloseButton = styled.button`
   border-radius: 50%;
 
   background: ${({ theme }) =>
-        theme.card};
+    theme.card};
 
   color: ${({ theme }) =>
-        theme.text};
+    theme.text};
 
   cursor: pointer;
 
@@ -127,7 +172,7 @@ export const CloseButton = styled.button`
 
   &:hover {
     background: ${({ theme }) =>
-        theme.secondary};
+    theme.secondary};
 
     transform: rotate(90deg);
   }
@@ -146,7 +191,7 @@ export const Title = styled.h2`
   margin: 0 0 8px;
 
   color: ${({ theme }) =>
-        theme.text};
+    theme.text};
 
   font-size: 24px;
   font-weight: 800;
@@ -167,7 +212,7 @@ export const Description = styled.p`
   margin: 0 0 20px;
 
   color: ${({ theme }) =>
-        theme.muted};
+    theme.muted};
 
   font-size: 13px;
   line-height: 1.5;
@@ -188,17 +233,17 @@ export const ColorInput = styled.input`
 
   border: 1px solid
     ${({ theme }) =>
-        theme.secondary};
+    theme.secondary};
 
   border-radius: 9px;
 
   outline: none;
 
   background: ${({ theme }) =>
-        theme.card};
+    theme.card};
 
   color: ${({ theme }) =>
-        theme.text};
+    theme.text};
 
   font-size: 14px;
 
@@ -210,16 +255,17 @@ export const ColorInput = styled.input`
 
   &::placeholder {
     color: ${({ theme }) =>
-        theme.muted};
+    theme.muted};
   }
 
   &:focus {
     border-color: ${({ theme }) =>
-        theme.button};
+    theme.button};
 
     box-shadow:
       0 0 0 3px
-      rgba(255, 179, 108, 0.15);
+      ${({ theme }) =>
+    `${theme.button}26`};
   }
 `;
 
@@ -235,12 +281,12 @@ export const ColorSuggestions = styled.div`
 
   border: 1px solid
     ${({ theme }) =>
-        theme.secondary};
+    theme.secondary};
 
   border-radius: 9px;
 
   background: ${({ theme }) =>
-        theme.card};
+    theme.card};
 
   box-shadow:
     0 8px 20px
@@ -256,7 +302,7 @@ export const ColorSuggestions = styled.div`
 
   &::-webkit-scrollbar-thumb {
     background: ${({ theme }) =>
-        theme.secondary};
+    theme.secondary};
 
     border-radius: 10px;
   }
@@ -291,15 +337,15 @@ export const ColorSuggestion = styled.button`
 
   border-bottom: 1px solid
     ${({ theme }) =>
-        theme.secondary};
+    theme.secondary};
 
   background: ${({ theme, $selected }) =>
-        $selected
-            ? theme.secondary
-            : "transparent"};
+    $selected
+      ? theme.secondary
+      : "transparent"};
 
   color: ${({ theme }) =>
-        theme.text};
+    theme.text};
 
   cursor: pointer;
 
@@ -315,7 +361,7 @@ export const ColorSuggestion = styled.button`
 
   &:hover {
     background: ${({ theme }) =>
-        theme.secondary};
+    theme.secondary};
   }
 
   &:active {
@@ -332,7 +378,7 @@ export const ColorSquare = styled.span`
   border-radius: 7px;
 
   background: ${({ $color }) =>
-        $color};
+    $color};
 
   border: 1px solid
     rgba(0, 0, 0, 0.08);
@@ -342,16 +388,22 @@ export const ColorSquare = styled.span`
     rgba(255, 255, 255, 0.15);
 
   transition:
-    transform 0.2s ease;
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 
   ${ColorSuggestion}:hover & {
     transform: scale(1.08);
+
+    box-shadow:
+      0 0 12px
+      ${({ $color }) =>
+    `${$color}66`};
   }
 `;
 
 export const ColorName = styled.span`
   color: ${({ theme }) =>
-        theme.text};
+    theme.text};
 
   font-size: 13px;
   font-weight: 500;
@@ -368,7 +420,7 @@ export const CheckIcon = styled.span`
   justify-content: center;
 
   color: ${({ theme }) =>
-        theme.text};
+    theme.text};
 
   animation: checkAppear 0.2s ease;
 
@@ -394,7 +446,7 @@ export const NoResults = styled.div`
   padding: 14px;
 
   color: ${({ theme }) =>
-        theme.muted};
+    theme.muted};
 
   font-size: 13px;
 
@@ -405,16 +457,20 @@ export const NoResults = styled.div`
 `;
 
 export const ApplyButton = styled.button`
+  position: relative;
+
   width: 100%;
   height: 42px;
 
   margin-top: 18px;
 
+  overflow: hidden;
+
   border: none;
   border-radius: 9px;
 
   background: ${({ theme }) =>
-        theme.button};
+    theme.button};
 
   color: #111111;
 
@@ -425,19 +481,49 @@ export const ApplyButton = styled.button`
 
   box-shadow:
     0 5px 15px
-    rgba(255, 179, 108, 0.22);
+    ${({ theme }) =>
+    `${theme.button}38`};
 
   transition:
     background 0.2s ease,
     transform 0.2s ease,
     box-shadow 0.2s ease;
 
+  &::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: -100%;
+
+    width: 60%;
+    height: 100%;
+
+    background: linear-gradient(
+      110deg,
+      transparent,
+      rgba(255, 255, 255, 0.45),
+      transparent
+    );
+
+    transform: skewX(-20deg);
+
+    transition:
+      left 0.55s ease;
+  }
+
   &:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 
     box-shadow:
-      0 7px 20px
-      rgba(255, 179, 108, 0.32);
+      0 8px 24px
+      ${({ theme }) =>
+    `${theme.button}55`};
+
+    &::before {
+      left: 140%;
+    }
   }
 
   &:active {

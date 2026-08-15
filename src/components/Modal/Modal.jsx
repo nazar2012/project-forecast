@@ -6,6 +6,7 @@ import { FiX, FiEye, FiEyeOff } from "react-icons/fi";
 import {
   Overlay,
   ModalWrapper,
+  Glow,
   CloseButton,
   Title,
   Form,
@@ -83,6 +84,10 @@ export default function Modal({
         $dark={darkMode}
         $accent={accentColor}
       >
+        <Glow $accent={accentColor} $position="top" />
+        <Glow $accent={accentColor} $position="bottom" />
+        <Glow $accent={accentColor} $position="center" />
+
         <CloseButton
           $dark={darkMode}
           $accent={accentColor}
