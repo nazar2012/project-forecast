@@ -8,21 +8,23 @@ export const HeaderWrapper = styled.header`
 
   width: 100%;
 
-  min-height: ${({ $scrolled }) =>
-    $scrolled ? "62px" : "72px"};
+  min-height: ${({ $scrollingDown }) =>
+    $scrollingDown ? "54px" : "72px"};
 
   display: flex;
   align-items: center;
 
-  padding: ${({ $scrolled }) =>
-    $scrolled ? "0 32px" : "0 40px"};
+  padding: ${({ $scrollingDown }) =>
+    $scrollingDown ? "0 26px" : "0 40px"};
 
   z-index: 1000;
 
   box-sizing: border-box;
 
-  background: ${({ theme }) =>
-    theme.background};
+  background: ${({ theme, $scrolled }) =>
+    $scrolled
+      ? `${theme.background}E6`
+      : theme.background};
 
   color: ${({ theme }) =>
     theme.text};
@@ -33,22 +35,40 @@ export const HeaderWrapper = styled.header`
       : "0 4px 16px rgba(0, 0, 0, 0.12)"};
 
   backdrop-filter: ${({ $scrolled }) =>
-    $scrolled ? "blur(10px)" : "none"};
+    $scrolled
+      ? "blur(14px)"
+      : "blur(0px)"};
+
+  -webkit-backdrop-filter: ${({ $scrolled }) =>
+    $scrolled
+      ? "blur(14px)"
+      : "blur(0px)"};
 
   transition:
-    min-height 0.3s ease,
-    padding 0.3s ease,
-    background 0.3s ease,
+    min-height 0.35s ease,
+    padding 0.35s ease,
+    background 0.35s ease,
     color 0.3s ease,
-    box-shadow 0.3s ease,
-    backdrop-filter 0.3s ease;
+    box-shadow 0.35s ease,
+    backdrop-filter 0.5s ease,
+    -webkit-backdrop-filter 0.5s ease;
 
   @media (max-width: 768px) {
-    min-height: ${({ $scrolled }) =>
-    $scrolled ? "58px" : "64px"};
+    min-height: ${({ $scrollingDown }) =>
+    $scrollingDown ? "52px" : "64px"};
 
-    padding: ${({ $scrolled }) =>
-    $scrolled ? "0 16px" : "0 20px"};
+    padding: ${({ $scrollingDown }) =>
+    $scrollingDown ? "0 14px" : "0 20px"};
+
+    backdrop-filter: ${({ $scrolled }) =>
+    $scrolled
+      ? "blur(12px)"
+      : "blur(0px)"};
+
+    -webkit-backdrop-filter: ${({ $scrolled }) =>
+    $scrolled
+      ? "blur(12px)"
+      : "blur(0px)"};
   }
 `;
 
@@ -71,15 +91,21 @@ export const Logo = styled.a`
 
     transition:
       transform 0.3s ease,
-      filter 0.3s ease;
+      filter 0.3s ease,
+      width 0.35s ease,
+      height 0.35s ease;
   }
 
   &:hover img {
-    transform: translateY(-2px) scale(1.06);
+    transform:
+      translateY(-2px)
+      scale(1.06);
   }
 
   &:active img {
-    transform: translateY(0) scale(0.98);
+    transform:
+      translateY(0)
+      scale(0.98);
   }
 
   @media (max-width: 768px) {
@@ -111,7 +137,8 @@ export const Navigation = styled.nav`
 export const NavLink = styled.a`
   position: relative;
 
-  color: ${({ theme }) => theme.text};
+  color: ${({ theme }) =>
+    theme.text};
 
   font-size: 14px;
   font-weight: 400;
@@ -127,22 +154,32 @@ export const NavLink = styled.a`
 
   &::after {
     content: "";
+
     position: absolute;
+
     left: 0;
     bottom: 0;
+
     width: 100%;
     height: 2px;
+
     background: ${({ theme }) =>
     theme.button};
+
     border-radius: 10px;
+
     transform: scaleX(0);
     transform-origin: center;
-    transition: transform 0.3s ease;
+
+    transition:
+      transform 0.3s ease;
   }
 
   &:hover {
     opacity: 1;
-    transform: translateY(-1px);
+
+    transform:
+      translateY(-1px);
   }
 
   &:hover::after {
@@ -150,7 +187,25 @@ export const NavLink = styled.a`
   }
 
   &:active {
-    transform: translateY(0);
+    transform:
+      translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    opacity: ${({ $open }) =>
+    $open ? 1 : 0};
+
+    transform: ${({ $open }) =>
+    $open
+      ? "translateY(0)"
+      : "translateY(8px)"};
+
+    ${({ $open, $mobileIndex }) =>
+    $open &&
+    `
+        transition-delay:
+          ${0.05 + $mobileIndex * 0.06}s;
+      `}
   }
 `;
 
@@ -182,36 +237,48 @@ export const Actions = styled.div`
 
 export const SignUpButton = styled.button`
   height: 36px;
+
   padding: 0 18px;
+
   border: none;
   border-radius: 10px;
-  background: ${({ theme }) => theme.button};
+
+  background: ${({ theme }) =>
+    theme.button};
+
   color: #111111;
+
   font-size: 13px;
   font-weight: 400;
+
   cursor: pointer;
+
   box-shadow:
     0 4px 12px
     rgba(0, 0, 0, 0.08);
+
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease;
+
   &:hover {
     transform:
       translateY(-2px)
       scale(1.03);
+
     box-shadow:
       0 8px 20px
       rgba(0, 0, 0, 0.14);
   }
 
-&:active {
-  transform: scale(0.94);
+  &:active {
+    transform:
+      scale(0.94);
 
-  box-shadow:
-    0 2px 6px
-    rgba(0, 0, 0, 0.1);
-}
+    box-shadow:
+      0 2px 6px
+      rgba(0, 0, 0, 0.1);
+  }
 `;
 
 export const UserIcon = styled.div`
@@ -224,7 +291,8 @@ export const UserIcon = styled.div`
 
   border-radius: 50%;
 
-  background: ${({ theme }) => theme.secondary};
+  background: ${({ theme }) =>
+    theme.secondary};
 
   cursor: pointer;
   overflow: hidden;
@@ -241,9 +309,11 @@ export const UserIcon = styled.div`
 
     box-shadow:
       0 0 0 3px
-        ${({ theme }) => `${theme.accent}33`},
+        ${({ theme }) =>
+    `${theme.accent}33`},
       0 0 18px
-        ${({ theme }) => `${theme.accent}88`},
+        ${({ theme }) =>
+    `${theme.accent}88`},
       0 5px 20px
         rgba(0, 0, 0, 0.18);
   }
@@ -256,14 +326,17 @@ export const UserIcon = styled.div`
     content: "";
 
     position: absolute;
+
     inset: -2px;
 
     border-radius: 50%;
 
     border: 1px solid
-      ${({ theme }) => theme.accent};
+      ${({ theme }) =>
+    theme.accent};
 
     opacity: 0;
+
     transform: scale(0.8);
 
     transition:
@@ -275,15 +348,19 @@ export const UserIcon = styled.div`
 
   &:hover::after {
     opacity: 0.7;
+
     transform: scale(1);
   }
 
   img {
     width: 100%;
     height: 100%;
+
     display: block;
+
     object-fit: cover;
     object-position: center;
+
     position: relative;
     z-index: 2;
   }
@@ -307,26 +384,38 @@ export const MobileMenuButton = styled.button`
   margin-left: auto;
 
   border: none;
+
   background: transparent;
 
-  color: ${({ theme }) => theme.text};
+  color: ${({ theme }) =>
+    theme.text};
 
   font-size: 14px;
 
   cursor: pointer;
 
   transition:
-    transform 0.2s ease,
+    transform 0.25s ease,
     opacity 0.2s ease;
+
+  .menu-arrow {
+    display: inline-block;
+
+    margin-left: 3px;
+
+    transition:
+      transform 0.3s ease;
+  }
 
   &:hover {
     transform: scale(1.05);
+
     opacity: 0.7;
   }
 
   &:active {
     transform: scale(0.94);
-  } 
+  }
 
   @media (max-width: 768px) {
     display: block;
@@ -336,7 +425,7 @@ export const MobileMenuButton = styled.button`
 export const MobileNavigation = styled.div`
   position: absolute;
 
-  top: 64px;
+  top: 100%;
   left: 0;
 
   width: 100%;
@@ -345,14 +434,19 @@ export const MobileNavigation = styled.div`
 
   box-sizing: border-box;
 
-  background: ${({ theme }) => theme.background};
-  color: ${({ theme }) => theme.text};
+  background: ${({ theme }) =>
+    theme.background};
+
+  color: ${({ theme }) =>
+    theme.text};
 
   border-top: 1px solid
-    ${({ theme }) => theme.secondary};
+    ${({ theme }) =>
+    theme.secondary};
 
   box-shadow:
-    0 8px 20px rgba(0, 0, 0, 0.12);
+    0 8px 20px
+    rgba(0, 0, 0, 0.12);
 
   z-index: 100;
 
@@ -361,18 +455,29 @@ export const MobileNavigation = styled.div`
   transform: ${({ $open }) =>
     $open
       ? "translateY(0) scaleY(1)"
-      : "translateY(-12px) scaleY(0.96)"};
+      : "translateY(-18px) scaleY(0.96)"};
 
   opacity: ${({ $open }) =>
     $open ? 1 : 0};
 
   visibility: ${({ $open }) =>
-    $open ? "visible" : "hidden"};
+    $open
+      ? "visible"
+      : "hidden"};
+
+  filter: ${({ $open }) =>
+    $open
+      ? "blur(0)"
+      : "blur(5px)"};
+
+  pointer-events: ${({ $open }) =>
+    $open ? "auto" : "none"};
 
   transition:
-    transform 0.35s
+    transform 0.4s
       cubic-bezier(0.22, 1, 0.36, 1),
     opacity 0.25s ease,
+    filter 0.35s ease,
     visibility 0.35s ease;
 
   @media (min-width: 769px) {
@@ -396,6 +501,11 @@ export const MobileLinks = styled.nav`
   flex-direction: column;
 
   gap: 15px;
+
+  a {
+    opacity: ${({ children }) =>
+    children ? undefined : 1};
+  }
 `;
 
 export const MobileActions = styled.div`
@@ -406,6 +516,20 @@ export const MobileActions = styled.div`
   align-items: flex-end;
 
   gap: 15px;
+
+  opacity: ${({ $open }) =>
+    $open ? 1 : 0};
+
+  transform: ${({ $open }) =>
+    $open
+      ? "translateX(0)"
+      : "translateX(12px)"};
+
+  transition:
+    opacity 0.35s ease 0.2s,
+    transform 0.4s
+      cubic-bezier(0.22, 1, 0.36, 1)
+      0.2s;
 `;
 
 export const MobileUserIcon = styled.div`
@@ -418,7 +542,8 @@ export const MobileUserIcon = styled.div`
 
   border-radius: 50%;
 
-  background: ${({ theme }) => theme.secondary};
+  background: ${({ theme }) =>
+    theme.secondary};
 
   cursor: pointer;
   overflow: hidden;
@@ -454,7 +579,9 @@ export const MobileSignUpButton = styled.button`
   border: none;
   border-radius: 10px;
 
-  background: ${({ theme }) => theme.button};
+  background: ${({ theme }) =>
+    theme.button};
+
   color: #111111;
 
   font-size: 13px;
@@ -479,18 +606,32 @@ export const MobileSignUpButton = styled.button`
       rgba(0, 0, 0, 0.14);
   }
 
-&:active {
-  transform: scale(0.94);
+  &:active {
+    transform: scale(0.94);
 
-  box-shadow:
-    0 2px 6px
-    rgba(0, 0, 0, 0.1);
-}
+    box-shadow:
+      0 2px 6px
+      rgba(0, 0, 0, 0.1);
+  }
 `;
 
 export const MobileTheme = styled.div`
   display: flex;
+
   justify-content: center;
   align-items: center;
+
   margin-top: 20px;
+
+  opacity: ${({ $open }) =>
+    $open ? 1 : 0};
+
+  transform: ${({ $open }) =>
+    $open
+      ? "translateY(0)"
+      : "translateY(8px)"};
+
+  transition:
+    opacity 0.35s ease 0.35s,
+    transform 0.35s ease 0.35s;
 `;

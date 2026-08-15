@@ -1,5 +1,3 @@
-// WeatherList.jsx
-
 import { useEffect, useState } from "react";
 import {
   FiRefreshCw,
@@ -43,6 +41,10 @@ import {
   MoreButton,
   DeleteButton,
   UnitButton,
+  EmptyState,
+  EmptyTitle,
+  EmptyText,
+  EmptyButton,
 } from "./WeatherList.styled";
 
 export default function WeatherList({
@@ -179,14 +181,51 @@ export default function WeatherList({
     return Math.round(temperature);
   };
 
-  const closeAllForecasts = () => {
-    setSelectedCity(null);
-    setSelectedWeeklyCity(null);
-    setSelectedMoreCity(null);
+  const handleAddCityClick = () => {
+    const hero =
+      document.getElementById("about");
+
+    if (hero) {
+      hero.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+
+    setTimeout(() => {
+      const input =
+        document.getElementById(
+          "weather-search-input"
+        );
+
+      if (input) {
+        input.focus();
+      }
+    }, 500);
   };
 
   if (cities.length === 0) {
-    return null;
+    return (
+      <WeatherSection id="menu">
+        <EmptyState>
+          <EmptyTitle>
+            No cities yet
+          </EmptyTitle>
+
+          <EmptyText>
+            Add a city to see the weather here
+          </EmptyText>
+
+          <EmptyButton
+            type="button"
+            $accent={userColor}
+            onClick={handleAddCityClick}
+          >
+            Search for a city
+          </EmptyButton>
+        </EmptyState>
+      </WeatherSection>
+    );
   }
 
   return (
@@ -367,17 +406,23 @@ export default function WeatherList({
       {selectedCity && (
         <HourlyForecast
           city={selectedCity}
-          unit={getCityUnit(selectedCity.id)}
+          unit={getCityUnit(
+            selectedCity.id
+          )}
           darkMode={darkMode}
           chartColor={userColor}
-          onClose={() => setSelectedCity(null)}
+          onClose={() =>
+            setSelectedCity(null)
+          }
         />
       )}
 
       {selectedWeeklyCity && (
         <WeeklyForecast
           city={selectedWeeklyCity}
-          unit={getCityUnit(selectedWeeklyCity.id)}
+          unit={getCityUnit(
+            selectedWeeklyCity.id
+          )}
           darkMode={darkMode}
           accentColor={userColor}
           onClose={() =>

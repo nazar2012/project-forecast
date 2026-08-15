@@ -2,60 +2,86 @@ import styled from "styled-components";
 
 export const HeroWrapper = styled.section`
   position: relative;
+
   width: 100%;
+
   height: calc(100vh - 50px);
+
   min-height: 560px;
+
   margin: 0;
+
   overflow: visible;
+
   display: flex;
   justify-content: center;
+
   background: #111111;
+
   margin-top: 64px;
 
   @media screen and (min-width: 564px) {
     height: calc(100vh - 70px);
+
     min-height: 600px;
+
     margin-top: 72px;
   }
 
   @media screen and (min-width: 1160px) {
     height: calc(100vh - 82px);
+
     min-height: 650px;
+
     margin-top: 72px;
   }
 `;
 
 export const HeroBackground = styled.div`
   position: absolute;
+
   inset: 0;
+
   width: 100%;
   height: 100%;
+
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
 
   &::after {
     content: "";
+
     position: absolute;
+
     inset: 0;
-    background: rgba(0, 0, 0, 0.48);
+
+    background:
+      rgba(0, 0, 0, 0.48);
   }
 `;
 
 export const HeroContent = styled.div`
   position: relative;
+
   z-index: 1;
 
   width: 100%;
+
   max-width: 1100px;
+
   height: 100%;
 
   display: flex;
+
   flex-direction: column;
+
   align-items: center;
+
   justify-content: center;
 
   box-sizing: border-box;
+
   padding: 0 16px;
 
   @media screen and (min-width: 564px) {
@@ -73,7 +99,9 @@ export const Title = styled.h1`
   color: #ffffff;
 
   font-size: 28px;
+
   font-weight: 700;
+
   line-height: 1.2;
 
   text-align: center;
@@ -91,18 +119,22 @@ export const Info = styled.div`
   margin-top: 35px;
 
   display: flex;
+
   align-items: center;
+
   justify-content: center;
 
   gap: 20px;
 
   @media screen and (min-width: 564px) {
     margin-top: 45px;
+
     gap: 30px;
   }
 
   @media screen and (min-width: 1160px) {
     margin-top: 55px;
+
     gap: 40px;
   }
 `;
@@ -113,7 +145,9 @@ export const Description = styled.p`
   color: #ffffff;
 
   font-size: 14px;
+
   font-weight: 400;
+
   line-height: 1.2;
 
   text-align: right;
@@ -124,12 +158,14 @@ export const Description = styled.p`
 
   @media screen and (min-width: 1160px) {
     font-size: 20px;
+
     line-height: 1.15;
   }
 `;
 
 export const Divider = styled.div`
   width: 2px;
+
   height: 75px;
 
   flex-shrink: 0;
@@ -151,14 +187,18 @@ export const DateBlock = styled.p`
   color: #ffffff;
 
   font-size: 14px;
+
   font-weight: 400;
+
   line-height: 1.2;
 
   text-align: left;
 
   sup {
     position: relative;
+
     top: -2px;
+
     font-size: 9px;
   }
 
@@ -172,10 +212,12 @@ export const DateBlock = styled.p`
 
   @media screen and (min-width: 1160px) {
     font-size: 20px;
+
     line-height: 1.15;
 
     sup {
       top: -3px;
+
       font-size: 12px;
     }
   }
@@ -185,27 +227,33 @@ export const SearchContainer = styled.div`
   position: relative;
 
   width: calc(100% - 20px);
+
   max-width: 420px;
 
   margin-top: 55px;
 
   @media screen and (min-width: 564px) {
     width: 520px;
+
     max-width: 100%;
+
     margin-top: 70px;
   }
 
   @media screen and (min-width: 1160px) {
     width: 625px;
+
     margin-top: 90px;
   }
 `;
 
 export const SearchWrapper = styled.form`
   width: 100%;
+
   height: 40px;
 
   display: flex;
+
   align-items: stretch;
 
   overflow: hidden;
@@ -231,18 +279,23 @@ export const SearchInput = styled.input`
   flex: 1;
 
   width: 100%;
+
   min-width: 0;
+
   height: 40px;
 
   padding: 0 14px;
 
   border: none;
+
   outline: none;
 
   background: #ffffff;
+
   color: #222222;
 
   font-size: 12px;
+
   font-weight: 400;
 
   box-sizing: border-box;
@@ -251,33 +304,46 @@ export const SearchInput = styled.input`
     color: #999999;
   }
 
+  &:focus {
+    outline: none;
+  }
+
   @media screen and (min-width: 564px) {
     height: 42px;
+
     padding: 0 18px;
+
     font-size: 13px;
   }
 
   @media screen and (min-width: 1160px) {
     padding: 0 20px;
+
     font-size: 14px;
   }
 `;
 
 export const SearchButton = styled.button`
   width: 40px;
+
   height: 40px;
 
   flex-shrink: 0;
 
   display: flex;
+
   align-items: center;
+
   justify-content: center;
 
   padding: 0;
 
   border: none;
 
-  background: ${({ theme }) => theme.button};
+  background:
+    ${({ theme }) =>
+    theme.button};
+
   color: #111111;
 
   cursor: pointer;
@@ -288,11 +354,14 @@ export const SearchButton = styled.button`
     box-shadow 0.25s ease;
 
   &:hover {
-    background: ${({ theme }) => theme.button};
+    background:
+      ${({ theme }) =>
+    theme.button};
 
     box-shadow:
       inset 0 -3px 0
-      ${({ theme }) => `${theme.button}55`};
+      ${({ theme }) =>
+    `${theme.button}55`};
   }
 
   &:active {
@@ -301,6 +370,7 @@ export const SearchButton = styled.button`
 
   svg {
     width: 18px;
+
     height: 18px;
 
     transition:
@@ -313,20 +383,24 @@ export const SearchButton = styled.button`
 
   @media screen and (min-width: 564px) {
     width: 42px;
+
     height: 42px;
 
     svg {
       width: 19px;
+
       height: 19px;
     }
   }
 
   @media screen and (min-width: 1160px) {
     width: 42px;
+
     height: 42px;
 
     svg {
       width: 20px;
+
       height: 20px;
     }
   }
@@ -336,12 +410,15 @@ export const Suggestions = styled.div`
   position: absolute;
 
   top: calc(100% + 6px);
+
   left: 0;
 
   width: 100%;
+
   max-height: 260px;
 
   overflow-y: auto;
+
   overflow-x: hidden;
 
   border-radius: 10px;
@@ -360,11 +437,13 @@ export const Suggestions = styled.div`
 
   &::-webkit-scrollbar-track {
     background: #f1f1f1;
+
     border-radius: 10px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: ${({ theme }) =>
+    background:
+      ${({ theme }) =>
     theme.button};
 
     border-radius: 10px;
@@ -374,12 +453,14 @@ export const Suggestions = styled.div`
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: ${({ theme }) =>
+    background:
+      ${({ theme }) =>
     theme.button};
 
     box-shadow:
       0 0 5px
-      ${({ theme }) => `${theme.button}66`};
+      ${({ theme }) =>
+    `${theme.button}66`};
   }
 `;
 
@@ -387,6 +468,7 @@ export const Suggestion = styled.button`
   width: 100%;
 
   display: flex;
+
   align-items: center;
 
   gap: 12px;
@@ -396,6 +478,7 @@ export const Suggestion = styled.button`
   border: none;
 
   background: #ffffff;
+
   color: #111111;
 
   text-align: left;
@@ -408,11 +491,13 @@ export const Suggestion = styled.button`
 
   svg {
     width: 17px;
+
     height: 17px;
 
     flex-shrink: 0;
 
-    color: ${({ theme }) =>
+    color:
+      ${({ theme }) =>
     theme.button};
 
     transition:
@@ -421,14 +506,18 @@ export const Suggestion = styled.button`
   }
 
   &:hover {
-    background: ${({ theme }) =>
+    background:
+      ${({ theme }) =>
     `${theme.button}18`};
 
     svg {
-      color: ${({ theme }) =>
+      color:
+        ${({ theme }) =>
     theme.button};
 
-      transform: translateY(-1px) scale(1.08);
+      transform:
+        translateY(-1px)
+        scale(1.08);
     }
   }
 
@@ -445,10 +534,8 @@ export const Suggestion = styled.button`
 
 export const SuggestionText = styled.span`
   min-width: 0;
-
   display: flex;
   flex-direction: column;
-
   gap: 3px;
 `;
 
@@ -496,9 +583,7 @@ export const ClearButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-
   padding: 0;
-
   border: none;
   background: #ffffff;
   color: #999999;

@@ -1,17 +1,5 @@
 import styled, { keyframes } from "styled-components";
 
-const cardAppear = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(18px) scale(0.97);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-`;
-
 const favoritePop = keyframes`
   0% {
     transform: scale(1);
@@ -27,17 +15,6 @@ const favoritePop = keyframes`
 
   100% {
     transform: scale(1);
-  }
-`;
-
-const iconFloat = keyframes`
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-5px);
   }
 `;
 
@@ -88,27 +65,41 @@ export const WeatherListWrapper = styled.div`
 export const WeatherCard = styled.article`
   position: relative;
   overflow: hidden;
+
   width: 100%;
   max-width: 340px;
   min-height: 455px;
+
   padding: 14px 22px 28px;
+
   display: flex;
   flex-direction: column;
+
   box-sizing: border-box;
+
   border-radius: 18px;
-  background: ${({ theme }) => theme.card};
+
+  background: ${({ theme }) =>
+    theme.card};
+
   box-shadow:
-    0 8px 25px rgba(0, 0, 0, 0.08);
+    0 8px 25px
+    rgba(0, 0, 0, 0.08);
+
   transform: translateY(0) scale(1);
+
   transition:
     transform 0.35s ease,
     box-shadow 0.35s ease;
 
   &:hover {
-    transform: translateY(-8px) scale(1.015);
+    transform:
+      translateY(-8px)
+      scale(1.015);
 
     box-shadow:
-      0 20px 45px rgba(0, 0, 0, 0.18);
+      0 20px 45px
+      rgba(0, 0, 0, 0.18);
   }
 
   &::before {
@@ -122,12 +113,13 @@ export const WeatherCard = styled.article`
     width: 50%;
     height: 300%;
 
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.18),
-      transparent
-    );
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.18),
+        transparent
+      );
 
     transform: rotate(20deg);
 
@@ -147,23 +139,28 @@ export const WeatherCard = styled.article`
     opacity: 1;
   }
 
-@media screen and (min-width: 564px) {
-  max-width: 330px;
-  min-height: 455px;
-  padding: 15px 24px 38px;
-}
+  @media screen and (min-width: 564px) {
+    max-width: 330px;
+    min-height: 455px;
 
-@media screen and (min-width: 1160px) {
-  width: 375px;
-  max-width: 375px;
-  height: 500px;
-  min-height: 500px;
-  padding: 16px 30px 40px;
-  border-radius: 20px;
-}
+    padding: 15px 24px 38px;
+  }
+
+  @media screen and (min-width: 1160px) {
+    width: 375px;
+    max-width: 375px;
+
+    height: 500px;
+    min-height: 500px;
+
+    padding: 16px 30px 40px;
+
+    border-radius: 20px;
+  }
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;
+
     &:hover {
       transform: none;
     }
@@ -256,11 +253,15 @@ export const WeatherGlass = styled.div`
 
 export const WeatherCardContent = styled.div`
   position: relative;
+
   z-index: 2;
+
   width: 100%;
   min-height: 0;
+
   display: flex;
   flex-direction: column;
+
   flex: 1;
 `;
 
@@ -381,7 +382,7 @@ export const ForecastButton = styled.button`
 
   box-shadow:
     0 5px 15px
-      rgba(0, 0, 0, 0.12);
+    rgba(0, 0, 0, 0.12);
 
   transition:
     transform 0.25s ease,
@@ -395,7 +396,7 @@ export const ForecastButton = styled.button`
 
     box-shadow:
       0 8px 20px
-        ${({ $accent }) =>
+      ${({ $accent }) =>
     `${$accent}55`};
   }
 
@@ -441,9 +442,7 @@ export const DateInfo = styled.div`
 
   @media screen and (min-width: 1160px) {
     margin-top: 20px;
-
     gap: 13px;
-
     font-size: 14px;
   }
 `;
@@ -524,19 +523,22 @@ export const Temperature = styled.div`
 
   @media screen and (min-width: 1160px) {
     margin-top: 3px;
-
     font-size: 36px;
   }
 `;
 
 export const CardActions = styled.div`
   width: 100%;
+
   margin-top: auto;
   padding-top: 12px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   flex-shrink: 0;
+
   box-sizing: border-box;
 
   @media screen and (min-width: 1160px) {
@@ -627,14 +629,14 @@ export const FavoriteButton = styled.button`
       ? "#ff4141"
       : "#ffffff"};
 
-  cursor: pointer;
-
   animation:
     ${({ $active }) =>
     $active
       ? favoritePop
       : "none"}
     0.45s ease;
+
+  cursor: pointer;
 
   transition:
     transform 0.25s ease,
@@ -750,7 +752,7 @@ export const MoreButton = styled.button`
 
   box-shadow:
     0 5px 15px
-      rgba(0, 0, 0, 0.12);
+    rgba(0, 0, 0, 0.12);
 
   transition:
     transform 0.25s ease,
@@ -764,7 +766,7 @@ export const MoreButton = styled.button`
 
     box-shadow:
       0 8px 20px
-        ${({ $accent }) =>
+      ${({ $accent }) =>
     `${$accent}50`};
   }
 
@@ -835,5 +837,100 @@ export const DeleteButton = styled.button`
       width: 23px;
       height: 23px;
     }
+  }
+`;
+
+export const EmptyState = styled.div`
+  width: 100%;
+
+  padding: 30px 20px 40px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  text-align: center;
+`;
+
+export const EmptyTitle = styled.h2`
+  margin: 0;
+
+  color: ${({ theme }) =>
+    theme.text || "#222222"};
+
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.2;
+
+  @media screen and (min-width: 564px) {
+    font-size: 28px;
+  }
+
+  @media screen and (min-width: 1160px) {
+    font-size: 30px;
+  }
+`;
+
+export const EmptyText = styled.p`
+  margin: 10px 0 0;
+
+  color: ${({ theme }) =>
+    theme.secondaryText || "#777777"};
+
+  font-size: 14px;
+  line-height: 1.5;
+
+  @media screen and (min-width: 564px) {
+    font-size: 15px;
+  }
+`;
+
+export const EmptyButton = styled.button`
+  margin-top: 20px;
+
+  min-width: 150px;
+  height: 40px;
+
+  padding: 0 20px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background:
+    ${({ $accent }) =>
+    $accent};
+
+  color: #111111;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 6px 18px
+    rgba(0, 0, 0, 0.12);
+
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+
+    filter: brightness(0.95);
+
+    box-shadow:
+      0 9px 24px
+      rgba(0, 0, 0, 0.16);
+  }
+
+  &:active {
+    transform: scale(0.97);
   }
 `;

@@ -35,10 +35,30 @@ export default function Header({
 }) {
   const [menu, setMenu] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrollingDown, setIsScrollingDown] = useState(false);
 
   useEffect(() => {
+    let lastScrollY = window.scrollY;
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
+      const currentScrollY = window.scrollY;
+
+      setIsScrolled(currentScrollY > 40);
+
+      if (
+        currentScrollY > lastScrollY &&
+        currentScrollY > 80
+      ) {
+        setIsScrollingDown(true);
+      } else if (currentScrollY < lastScrollY) {
+        setIsScrollingDown(false);
+      }
+
+      if (currentScrollY <= 40) {
+        setIsScrollingDown(false);
+      }
+
+      lastScrollY = currentScrollY;
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -46,7 +66,10 @@ export default function Header({
     handleScroll();
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener(
+        "scroll",
+        handleScroll
+      );
     };
   }, []);
 
@@ -61,11 +84,15 @@ export default function Header({
   };
 
   return (
-    <HeaderWrapper $scrolled={isScrolled}>
+    <HeaderWrapper
+      $scrolled={isScrolled}
+      $scrollingDown={isScrollingDown}
+    >
       <Logo
         href="/"
         $dark={darkMode}
         $scrolled={isScrolled}
+        $scrollingDown={isScrollingDown}
       >
         <img
           src={logo}
@@ -133,38 +160,56 @@ export default function Header({
 
       <MobileMenuButton
         type="button"
+        $open={menu}
         onClick={() =>
           setMenu((prev) => !prev)
         }
       >
         Menu
-        {menu ? " →" : " ↓"}
+
+        <span className="menu-arrow">
+          {menu ? "↑" : "↓"}
+        </span>
       </MobileMenuButton>
 
       <MobileNavigation $open={menu}>
         <MobileMenuContent>
           <MobileLinks>
-            <NavLink href="#about">
+            <NavLink
+              href="#about"
+              $mobileIndex={0}
+              $open={menu}
+            >
               Who we are
             </NavLink>
 
-            <NavLink href="#contacts">
+            <NavLink
+              href="#contacts"
+              $mobileIndex={1}
+              $open={menu}
+            >
               Contacts
             </NavLink>
 
-            <NavLink href="#menu">
+            <NavLink
+              href="#menu"
+              $mobileIndex={2}
+              $open={menu}
+            >
               Menu
             </NavLink>
 
             <NavLink
               href="#game"
               onClick={handleGameClick}
+              $mobileIndex={3}
+              $open={menu}
             >
               🎮 Game
             </NavLink>
           </MobileLinks>
 
-          <MobileActions>
+          <MobileActions $open={menu}>
             <MobileUserIcon onClick={onProfile}>
               {avatar ? (
                 <UserAvatar
@@ -190,7 +235,7 @@ export default function Header({
           </MobileActions>
         </MobileMenuContent>
 
-        <MobileTheme>
+        <MobileTheme $open={menu}>
           <ThemeToggle
             darkMode={darkMode}
             onToggle={onToggle}
