@@ -4,7 +4,6 @@ import {
     FiChevronLeft,
     FiChevronRight,
     FiHeart,
-    FiPlay,
     FiRefreshCw,
     FiStar,
     FiX,
@@ -33,7 +32,9 @@ import {
     StartIcon,
     StartTitle,
     StartText,
-    StartButton,
+    DifficultyTitle,
+    DifficultyButtons,
+    DifficultyButton,
     GameOver,
     FinalScore,
     NewRecord,
@@ -66,9 +67,39 @@ import {
     WeatherIcon,
     WeatherName,
     GameHint,
+    DifficultyBadge,
 } from "./Game.styled";
 
 const GAME_TIME = 60;
+
+const difficulties = {
+    easy: {
+        name: "Easy",
+        time: 60,
+        lives: 3,
+        spawnRate: 2000,
+        score: 10,
+        dangerChance: 0.25,
+    },
+
+    medium: {
+        name: "Medium",
+        time: 60,
+        lives: 3,
+        spawnRate: 1400,
+        score: 15,
+        dangerChance: 0.45,
+    },
+
+    hard: {
+        name: "Hard",
+        time: 60,
+        lives: 2,
+        spawnRate: 900,
+        score: 20,
+        dangerChance: 0.65,
+    },
+};
 
 const weatherTypes = [
     {
@@ -114,7 +145,7 @@ const achievements = [
         id: "sun",
         icon: "☀️",
         name: "Sun Chaser",
-        description: "Collect 100 sunny shards.",
+        description: "Collect 100 sunny objects.",
     },
     {
         id: "rain",
@@ -127,12 +158,6 @@ const achievements = [
         icon: "⚡",
         name: "Storm Survivor",
         description: "Dodge 50 lightning strikes.",
-    },
-    {
-        id: "rainbow",
-        icon: "🌈",
-        name: "Lucky Rainbow",
-        description: "Catch a rainbow bonus.",
     },
     {
         id: "combo",
@@ -175,22 +200,72 @@ const collection = [
     },
 ];
 
-const getRandomWeather = () =>
-    weatherTypes[
-    Math.floor(Math.random() * weatherTypes.length)
+const createDefaultStats = () => ({
+    games: 0,
+
+    bestScores: {
+        easy: 0,
+        medium: 0,
+        hard: 0,
+    },
+
+    bestCombo: 0,
+
+    sun: 0,
+    rain: 0,
+    stormDodged: 0,
+    rainbow: 0,
+});
+
+const getInitialStats = () => {
+    try {
+        const saved = localStorage.getItem("weatherGameStats");
+
+        if (!saved) {
+            return createDefaultStats();
+        }
+
+        const parsed = JSON.parse(saved);
+
+        return {
+            games: Number(parsed.games) || 0,
+
+            bestScores: {
+                easy: Number(parsed.bestScores?.easy) || 0,
+                medium: Number(parsed.bestScores?.medium) || 0,
+                hard: Number(parsed.bestScores?.hard) || 0,
+            },
+
+            bestCombo: Number(parsed.bestCombo) || 0,
+
+            sun: Number(parsed.sun) || 0,
+            rain: Number(parsed.rain) || 0,
+            stormDodged: Number(parsed.stormDodged) || 0,
+            rainbow: Number(parsed.rainbow) || 0,
+        };
+    } catch {
+        return createDefaultStats();
+    }
+};
+
+const getRandomWeather = () => {
+    return weatherTypes[
+        Math.floor(Math.random() * weatherTypes.length)
     ];
+};
 
 const getRandomPosition = () => ({
     x: Math.random() * 82 + 6,
     y: Math.random() * 72 + 12,
 });
 
-const createObject = (weather) => {
+const createObject = (weather, difficulty) => {
     const position = getRandomPosition();
 
     const isDanger =
         weather.id === "storm" &&
-        Math.random() > 0.45;
+        Math.random() <
+        difficulties[difficulty].dangerChance;
 
     return {
         id: `${Date.now()}-${Math.random()}`,
@@ -204,12 +279,37 @@ const createObject = (weather) => {
 
 export default function Game({ onClose }) {
     const boardRef = useRef(null);
-    const playerRef = useRef({ x: 50, y: 50 });
+
+    const playerRef = useRef({
+        x: 50,
+        y: 50,
+    });
+
     const keysRef = useRef({});
+
+    const scoreRef = useRef(0);
+    const comboRef = useRef(0);
+    const livesRef = useRef(3);
+
+    const collectedRef = useRef({
+        sun: 0,
+        rain: 0,
+        stormDodged: 0,
+        rainbow: 0,
+    });
+
+    const gameStartedRef = useRef(false);
+    const difficultyRef = useRef(null);
+
     const gameLoopRef = useRef(null);
     const spawnRef = useRef(null);
+    const collisionRef = useRef(null);
     const lightningRef = useRef(null);
+    const lightningIdRef = useRef(null);
 
+    const endGameRef = useRef(null);
+
+    const [difficulty, setDifficulty] = useState(null);
     const [gameStarted, setGameStarted] = useState(false);
     const [gameOver, setGameOver] = useState(false);
 
@@ -245,107 +345,100 @@ export default function Game({ onClose }) {
     const [journalPage, setJournalPage] =
         useState(0);
 
-    const [stats, setStats] = useState(() => {
-        const saved = localStorage.getItem(
-            "weatherGameStats"
-        );
+    const [stats, setStats] =
+        useState(getInitialStats);
 
-        if (saved) {
-            try {
-                return JSON.parse(saved);
-            } catch {
-                return {
-                    games: 0,
-                    bestScore: 0,
-                    bestCombo: 0,
-                    sun: 0,
-                    rain: 0,
-                    stormDodged: 0,
-                    rainbow: 0,
-                };
-            }
+    const clearGameTimers = useCallback(() => {
+        if (gameLoopRef.current) {
+            cancelAnimationFrame(
+                gameLoopRef.current
+            );
+
+            gameLoopRef.current = null;
         }
 
-        return {
-            games: 0,
-            bestScore: 0,
-            bestCombo: 0,
-            sun: 0,
-            rain: 0,
-            stormDodged: 0,
-            rainbow: 0,
-        };
-    });
+        if (spawnRef.current) {
+            clearInterval(spawnRef.current);
 
-    const resetGame = useCallback(() => {
-        setScore(0);
-        setCombo(0);
-        setLives(3);
-        setTimeLeft(GAME_TIME);
-        setObjects([]);
-        setLightning(null);
-        setMessage("");
-        setGameOver(false);
+            spawnRef.current = null;
+        }
 
-        setCollected({
-            sun: 0,
-            rain: 0,
-            stormDodged: 0,
-            rainbow: 0,
-        });
+        if (collisionRef.current) {
+            clearInterval(
+                collisionRef.current
+            );
 
-        playerRef.current = {
-            x: 50,
-            y: 50,
-        };
+            collisionRef.current = null;
+        }
 
-        setPlayer({
-            x: 50,
-            y: 50,
-        });
+        if (lightningRef.current) {
+            clearTimeout(
+                lightningRef.current
+            );
 
-        setWeather(weatherTypes[0]);
+            lightningRef.current = null;
+        }
+
+        lightningIdRef.current = null;
     }, []);
 
     const saveStats = useCallback(
-        (finalScore, finalCombo, collectedData) => {
+        (
+            finalScore,
+            finalCombo,
+            finalCollected,
+            selectedDifficulty
+        ) => {
             setStats((previous) => {
                 const updated = {
                     ...previous,
 
-                    games: previous.games + 1,
+                    games:
+                        (previous.games || 0) + 1,
 
-                    bestScore: Math.max(
-                        previous.bestScore,
-                        finalScore
-                    ),
+                    bestScores: {
+                        ...previous.bestScores,
+
+                        [selectedDifficulty]:
+                            Math.max(
+                                previous
+                                    .bestScores?.[
+                                selectedDifficulty
+                                ] || 0,
+                                finalScore
+                            ),
+                    },
 
                     bestCombo: Math.max(
-                        previous.bestCombo,
+                        previous.bestCombo || 0,
                         finalCombo
                     ),
 
                     sun:
-                        previous.sun +
-                        (collectedData.sun || 0),
+                        (previous.sun || 0) +
+                        (finalCollected.sun || 0),
 
                     rain:
-                        previous.rain +
-                        (collectedData.rain || 0),
+                        (previous.rain || 0) +
+                        (finalCollected.rain || 0),
 
                     stormDodged:
-                        previous.stormDodged +
-                        (collectedData.stormDodged || 0),
+                        (previous.stormDodged || 0) +
+                        (finalCollected.stormDodged || 0),
 
                     rainbow:
-                        previous.rainbow +
-                        (collectedData.rainbow || 0),
+                        (previous.rainbow || 0) +
+                        (finalCollected.rainbow || 0),
                 };
 
-                localStorage.setItem(
-                    "weatherGameStats",
-                    JSON.stringify(updated)
-                );
+                try {
+                    localStorage.setItem(
+                        "weatherGameStats",
+                        JSON.stringify(updated)
+                    );
+                } catch {
+                    // localStorage may be unavailable.
+                }
 
                 return updated;
             });
@@ -353,48 +446,129 @@ export default function Game({ onClose }) {
         []
     );
 
-    const startGame = useCallback(() => {
-        resetGame();
-        setGameStarted(true);
-    }, [resetGame]);
-
     const endGame = useCallback(() => {
+        if (
+            !gameStartedRef.current ||
+            !difficultyRef.current
+        ) {
+            return;
+        }
+
+        const selectedDifficulty =
+            difficultyRef.current;
+
+        const finalScore = scoreRef.current;
+        const finalCombo = comboRef.current;
+
+        const finalCollected = {
+            ...collectedRef.current,
+        };
+
+        gameStartedRef.current = false;
+
         setGameStarted(false);
         setGameOver(true);
 
-        if (gameLoopRef.current) {
-            cancelAnimationFrame(
-                gameLoopRef.current
-            );
-        }
-
-        if (spawnRef.current) {
-            clearInterval(spawnRef.current);
-        }
-
-        if (lightningRef.current) {
-            clearTimeout(lightningRef.current);
-        }
+        clearGameTimers();
 
         saveStats(
-            score,
-            combo,
-            collected
+            finalScore,
+            finalCombo,
+            finalCollected,
+            selectedDifficulty
         );
     }, [
-        score,
-        combo,
-        collected,
+        clearGameTimers,
         saveStats,
     ]);
 
+    endGameRef.current = endGame;
+
+    const resetGame = useCallback(
+        (selectedDifficulty) => {
+            const config =
+                difficulties[selectedDifficulty];
+
+            clearGameTimers();
+
+            scoreRef.current = 0;
+            comboRef.current = 0;
+            livesRef.current =
+                config.lives;
+
+            collectedRef.current = {
+                sun: 0,
+                rain: 0,
+                stormDodged: 0,
+                rainbow: 0,
+            };
+
+            playerRef.current = {
+                x: 50,
+                y: 50,
+            };
+
+            setScore(0);
+            setCombo(0);
+            setLives(config.lives);
+            setTimeLeft(config.time);
+
+            setObjects([]);
+            setLightning(null);
+            setMessage("");
+
+            setPlayer({
+                x: 50,
+                y: 50,
+            });
+
+            setCollected({
+                sun: 0,
+                rain: 0,
+                stormDodged: 0,
+                rainbow: 0,
+            });
+
+            setWeather(weatherTypes[0]);
+        },
+        [clearGameTimers]
+    );
+
+    const startGame = useCallback(
+        (selectedDifficulty) => {
+            resetGame(selectedDifficulty);
+
+            difficultyRef.current =
+                selectedDifficulty;
+
+            gameStartedRef.current = true;
+
+            setDifficulty(
+                selectedDifficulty
+            );
+
+            setGameStarted(true);
+            setGameOver(false);
+        },
+        [resetGame]
+    );
+
     useEffect(() => {
-        if (!gameStarted) return;
+        if (!gameStarted) {
+            return;
+        }
 
         const timer = setInterval(() => {
             setTimeLeft((previous) => {
                 if (previous <= 1) {
                     clearInterval(timer);
+
+                    if (
+                        endGameRef.current
+                    ) {
+                        endGameRef.current();
+                    }
+
                     return 0;
                 }
 
@@ -402,24 +576,20 @@ export default function Game({ onClose }) {
             });
         }, 1000);
 
-        return () => clearInterval(timer);
+        return () =>
+            clearInterval(timer);
     }, [gameStarted]);
 
     useEffect(() => {
         if (
-            gameStarted &&
-            timeLeft <= 0
+            !gameStarted ||
+            !difficulty
         ) {
-            endGame();
+            return;
         }
-    }, [
-        timeLeft,
-        gameStarted,
-        endGame,
-    ]);
 
-    useEffect(() => {
-        if (!gameStarted) return;
+        const config =
+            difficulties[difficulty];
 
         spawnRef.current = setInterval(() => {
             const nextWeather =
@@ -429,50 +599,108 @@ export default function Game({ onClose }) {
 
             setObjects((previous) => {
                 const nextObject =
-                    createObject(nextWeather);
+                    createObject(
+                        nextWeather,
+                        difficulty
+                    );
 
                 return [
-                    ...previous.slice(-7),
+                    ...previous.slice(-9),
                     nextObject,
                 ];
             });
 
             if (
                 nextWeather.id === "storm" &&
-                Math.random() > 0.4
+                Math.random() <
+                config.dangerChance
             ) {
                 const position =
                     getRandomPosition();
 
+                const lightningId =
+                    Date.now();
+
+                lightningIdRef.current =
+                    lightningId;
+
                 setLightning({
-                    id: Date.now(),
+                    id: lightningId,
                     x: position.x,
                     y: position.y,
                 });
 
+                if (lightningRef.current) {
+                    clearTimeout(
+                        lightningRef.current
+                    );
+                }
+
                 lightningRef.current =
                     setTimeout(() => {
+                        if (
+                            lightningIdRef.current !==
+                            lightningId
+                        ) {
+                            return;
+                        }
+
                         setLightning(null);
+                        lightningRef.current =
+                            null;
+
+                        collectedRef.current = {
+                            ...collectedRef.current,
+
+                            stormDodged:
+                                collectedRef
+                                    .current
+                                    .stormDodged +
+                                1,
+                        };
+
+                        setCollected(
+                            collectedRef.current
+                        );
                     }, 1200);
             }
-        }, 1700);
+        }, config.spawnRate);
 
         return () => {
-            clearInterval(
-                spawnRef.current
-            );
+            if (spawnRef.current) {
+                clearInterval(
+                    spawnRef.current
+                );
+
+                spawnRef.current = null;
+            }
         };
-    }, [gameStarted]);
+    }, [
+        gameStarted,
+        difficulty,
+    ]);
 
     useEffect(() => {
-        if (!gameStarted) return;
+        if (!gameStarted) {
+            return;
+        }
 
         const handleKeyDown = (event) => {
-            keysRef.current[event.key] = true;
+            const key =
+                event.key.length === 1
+                    ? event.key.toLowerCase()
+                    : event.key;
+
+            keysRef.current[key] = true;
         };
 
         const handleKeyUp = (event) => {
-            keysRef.current[event.key] = false;
+            const key =
+                event.key.length === 1
+                    ? event.key.toLowerCase()
+                    : event.key;
+
+            keysRef.current[key] = false;
         };
 
         window.addEventListener(
@@ -499,10 +727,21 @@ export default function Game({ onClose }) {
     }, [gameStarted]);
 
     useEffect(() => {
-        if (!gameStarted) return;
+        if (!gameStarted) {
+            return;
+        }
 
         const movePlayer = () => {
-            const speed = 0.8;
+            const currentDifficulty =
+                difficultyRef.current;
+
+            const speed =
+                currentDifficulty === "hard"
+                    ? 1
+                    : currentDifficulty ===
+                        "medium"
+                        ? 0.9
+                        : 0.8;
 
             let { x, y } =
                 playerRef.current;
@@ -567,115 +806,181 @@ export default function Game({ onClose }) {
             );
 
         return () => {
-            cancelAnimationFrame(
-                gameLoopRef.current
-            );
+            if (gameLoopRef.current) {
+                cancelAnimationFrame(
+                    gameLoopRef.current
+                );
+
+                gameLoopRef.current = null;
+            }
         };
     }, [gameStarted]);
 
     useEffect(() => {
-        if (!gameStarted) return;
+        if (
+            !gameStarted ||
+            !difficulty
+        ) {
+            return;
+        }
 
-        const collisionTimer =
+        const config =
+            difficulties[difficulty];
+
+        collisionRef.current =
             setInterval(() => {
+                const currentPlayer =
+                    playerRef.current;
+
                 setObjects((previous) => {
                     const remaining = [];
 
-                    previous.forEach((object) => {
-                        const dx =
-                            object.x -
-                            playerRef.current.x;
+                    let nextScore =
+                        scoreRef.current;
 
-                        const dy =
-                            object.y -
-                            playerRef.current.y;
+                    let nextCombo =
+                        comboRef.current;
 
-                        const distance =
-                            Math.sqrt(
-                                dx * dx +
-                                dy * dy
-                            );
+                    let nextLives =
+                        livesRef.current;
 
-                        if (distance < 7) {
-                            if (object.danger) {
-                                setLives((value) =>
-                                    Math.max(
-                                        0,
-                                        value - 1
-                                    )
+                    let nextCollected = {
+                        ...collectedRef.current,
+                    };
+
+                    let changed = false;
+                    let hitDanger = false;
+                    let pointsGained = 0;
+
+                    previous.forEach(
+                        (object) => {
+                            const dx =
+                                object.x -
+                                currentPlayer.x;
+
+                            const dy =
+                                object.y -
+                                currentPlayer.y;
+
+                            const distance =
+                                Math.sqrt(
+                                    dx * dx +
+                                    dy * dy
                                 );
 
-                                setCombo(0);
+                            if (
+                                distance < 7
+                            ) {
+                                changed = true;
 
-                                setMessage(
-                                    "⚡ Storm hit!"
-                                );
-                            } else {
-                                const points =
-                                    10 +
-                                    combo * 2;
+                                if (
+                                    object.danger
+                                ) {
+                                    nextLives =
+                                        Math.max(
+                                            0,
+                                            nextLives -
+                                            1
+                                        );
 
-                                setScore(
-                                    (value) =>
-                                        value +
-                                        points
-                                );
+                                    nextCombo = 0;
+                                    hitDanger = true;
+                                } else {
+                                    const points =
+                                        config.score +
+                                        nextCombo * 2;
 
-                                setCombo(
-                                    (value) =>
-                                        value + 1
-                                );
+                                    nextScore +=
+                                        points;
 
-                                setCollected(
-                                    (previousCollected) => ({
-                                        ...previousCollected,
+                                    nextCombo += 1;
 
-                                        [object.type]:
-                                            (previousCollected[
-                                                object.type
-                                            ] || 0) + 1,
-                                    })
-                                );
+                                    pointsGained +=
+                                        points;
 
-                                setMessage(
-                                    `+${points}`
-                                );
+                                    nextCollected[
+                                        object.type
+                                    ] =
+                                        (nextCollected[
+                                            object.type
+                                        ] || 0) + 1;
+                                }
+
+                                return;
                             }
 
-                            return;
+                            remaining.push(
+                                object
+                            );
+                        }
+                    );
+
+                    if (changed) {
+                        scoreRef.current =
+                            nextScore;
+
+                        comboRef.current =
+                            nextCombo;
+
+                        livesRef.current =
+                            nextLives;
+
+                        collectedRef.current =
+                            nextCollected;
+
+                        setScore(nextScore);
+                        setCombo(nextCombo);
+                        setLives(nextLives);
+                        setCollected(
+                            nextCollected
+                        );
+
+                        if (hitDanger) {
+                            setMessage(
+                                "⚡ Storm hit!"
+                            );
+                        } else if (
+                            pointsGained > 0
+                        ) {
+                            setMessage(
+                                `+${pointsGained}`
+                            );
                         }
 
-                        remaining.push(object);
-                    });
+                        if (
+                            nextLives <= 0 &&
+                            endGameRef.current
+                        ) {
+                            setTimeout(() => {
+                                endGameRef.current();
+                            }, 0);
+                        }
+                    }
 
                     return remaining;
                 });
-            }, 70);
+            }, 50);
 
-        return () =>
-            clearInterval(
-                collisionTimer
-            );
+        return () => {
+            if (
+                collisionRef.current
+            ) {
+                clearInterval(
+                    collisionRef.current
+                );
+
+                collisionRef.current = null;
+            }
+        };
     }, [
         gameStarted,
-        combo,
+        difficulty,
     ]);
 
     useEffect(() => {
-        if (
-            lives <= 0 &&
-            gameStarted
-        ) {
-            endGame();
+        if (!message) {
+            return;
         }
-    }, [
-        lives,
-        gameStarted,
-        endGame,
-    ]);
-
-    useEffect(() => {
-        if (!message) return;
 
         const timeout =
             setTimeout(() => {
@@ -688,33 +993,35 @@ export default function Game({ onClose }) {
 
     useEffect(() => {
         return () => {
-            if (gameLoopRef.current) {
-                cancelAnimationFrame(
-                    gameLoopRef.current
-                );
-            }
+            gameStartedRef.current = false;
 
-            if (spawnRef.current) {
-                clearInterval(
-                    spawnRef.current
-                );
-            }
+            clearGameTimers();
 
-            if (lightningRef.current) {
-                clearTimeout(
-                    lightningRef.current
-                );
-            }
+            window.removeEventListener(
+                "keydown",
+                () => { }
+            );
+
+            window.removeEventListener(
+                "keyup",
+                () => { }
+            );
         };
-    }, []);
+    }, [clearGameTimers]);
 
-    const handleBoardClick = (event) => {
-        if (!gameStarted) return;
+    const handleBoardClick = (
+        event
+    ) => {
+        if (!gameStarted) {
+            return;
+        }
 
         const rect =
             boardRef.current?.getBoundingClientRect();
 
-        if (!rect) return;
+        if (!rect) {
+            return;
+        }
 
         const x =
             ((event.clientX -
@@ -733,6 +1040,7 @@ export default function Game({ onClose }) {
                 4,
                 Math.min(96, x)
             ),
+
             y: Math.max(
                 8,
                 Math.min(92, y)
@@ -744,9 +1052,22 @@ export default function Game({ onClose }) {
         );
     };
 
+    const getBestScore = () => {
+        if (!difficulty) {
+            return 0;
+        }
+
+        return (
+            stats.bestScores?.[
+            difficulty
+            ] || 0
+        );
+    };
+
     const isNewRecord =
+        gameOver &&
         score > 0 &&
-        score >= stats.bestScore;
+        score >= getBestScore();
 
     const achievementUnlocked = (
         achievement
@@ -764,11 +1085,9 @@ export default function Game({ onClose }) {
         }
 
         if (achievement.id === "storm") {
-            return stats.stormDodged >= 50;
-        }
-
-        if (achievement.id === "rainbow") {
-            return stats.rainbow >= 1;
+            return (
+                stats.stormDodged >= 50
+            );
         }
 
         if (achievement.id === "combo") {
@@ -779,7 +1098,9 @@ export default function Game({ onClose }) {
     };
 
     return (
-        <GameOverlay onClick={onClose}>
+        <GameOverlay
+            onClick={onClose}
+        >
             <GameWrapper
                 onClick={(event) =>
                     event.stopPropagation()
@@ -804,7 +1125,9 @@ export default function Game({ onClose }) {
                     <GameBoard
                         ref={boardRef}
                         $weather={weather.id}
-                        onClick={handleBoardClick}
+                        onClick={
+                            handleBoardClick
+                        }
                     >
                         {!gameStarted &&
                             !gameOver && (
@@ -824,19 +1147,62 @@ export default function Game({ onClose }) {
                                         the highest combo.
                                     </StartText>
 
-                                    <StartButton
-                                        type="button"
-                                        onClick={
-                                            startGame
-                                        }
-                                    >
-                                        <FiPlay />
-                                        Play
-                                    </StartButton>
+                                    <DifficultyTitle>
+                                        Choose difficulty
+                                    </DifficultyTitle>
+
+                                    <DifficultyButtons>
+                                        <DifficultyButton
+                                            type="button"
+                                            $active={
+                                                difficulty ===
+                                                "easy"
+                                            }
+                                            $difficulty="easy"
+                                            onClick={() =>
+                                                startGame(
+                                                    "easy"
+                                                )
+                                            }
+                                        >
+                                            Easy
+                                        </DifficultyButton>
+
+                                        <DifficultyButton
+                                            type="button"
+                                            $active={
+                                                difficulty ===
+                                                "medium"
+                                            }
+                                            $difficulty="medium"
+                                            onClick={() =>
+                                                startGame(
+                                                    "medium"
+                                                )
+                                            }
+                                        >
+                                            Medium
+                                        </DifficultyButton>
+
+                                        <DifficultyButton
+                                            type="button"
+                                            $active={
+                                                difficulty ===
+                                                "hard"
+                                            }
+                                            $difficulty="hard"
+                                            onClick={() =>
+                                                startGame(
+                                                    "hard"
+                                                )
+                                            }
+                                        >
+                                            Hard
+                                        </DifficultyButton>
+                                    </DifficultyButtons>
 
                                     <GameHint>
-                                        Use WASD / Arrow Keys
-                                        or tap the field
+                                        Easy · Medium · Hard
                                     </GameHint>
                                 </StartScreen>
                             )}
@@ -885,8 +1251,13 @@ export default function Game({ onClose }) {
                                         </StatLabel>
 
                                         <StatValue>
-                                            {[0, 1, 2].map(
-                                                (index) => (
+                                            {Array.from({
+                                                length:
+                                                    difficulties[
+                                                        difficulty
+                                                    ].lives,
+                                            }).map(
+                                                (_, index) => (
                                                     <FiHeart
                                                         key={
                                                             index
@@ -905,9 +1276,21 @@ export default function Game({ onClose }) {
                                 </BoardTop>
 
                                 <WeatherBadge>
-                                    {weather.icon}
+                                    {weather.icon}{" "}
                                     {weather.name}
                                 </WeatherBadge>
+
+                                <DifficultyBadge
+                                    $difficulty={
+                                        difficulty
+                                    }
+                                >
+                                    {
+                                        difficulties[
+                                            difficulty
+                                        ].name
+                                    }
+                                </DifficultyBadge>
 
                                 {combo >= 3 && (
                                     <Combo>
@@ -964,8 +1347,8 @@ export default function Game({ onClose }) {
                                 )}
 
                                 <GameHint>
-                                    WASD / arrows ·
-                                    tap to move
+                                    WASD / arrows · tap
+                                    to move
                                 </GameHint>
                             </>
                         )}
@@ -983,6 +1366,18 @@ export default function Game({ onClose }) {
                                         ? "Storm got you!"
                                         : "Weather Complete!"}
                                 </StartTitle>
+
+                                <DifficultyBadge
+                                    $difficulty={
+                                        difficulty
+                                    }
+                                >
+                                    {
+                                        difficulties[
+                                            difficulty
+                                        ].name
+                                    }
+                                </DifficultyBadge>
 
                                 {isNewRecord && (
                                     <NewRecord>
@@ -1003,7 +1398,7 @@ export default function Game({ onClose }) {
                                         <ResultValue>
                                             {Math.max(
                                                 score,
-                                                stats.bestScore
+                                                getBestScore()
                                             )}
                                         </ResultValue>
                                     </ResultItem>
@@ -1021,37 +1416,15 @@ export default function Game({ onClose }) {
                                             )}
                                         </ResultValue>
                                     </ResultItem>
-
-                                    <ResultItem>
-                                        <ResultLabel>
-                                            Sun collected
-                                        </ResultLabel>
-
-                                        <ResultValue>
-                                            {
-                                                collected.sun
-                                            }
-                                        </ResultValue>
-                                    </ResultItem>
-
-                                    <ResultItem>
-                                        <ResultLabel>
-                                            Rain collected
-                                        </ResultLabel>
-
-                                        <ResultValue>
-                                            {
-                                                collected.rain
-                                            }
-                                        </ResultValue>
-                                    </ResultItem>
                                 </ResultStats>
 
                                 <ResultButtons>
                                     <ResultButton
                                         type="button"
-                                        onClick={
-                                            startGame
+                                        onClick={() =>
+                                            startGame(
+                                                difficulty
+                                            )
                                         }
                                     >
                                         <FiRefreshCw />
@@ -1060,9 +1433,34 @@ export default function Game({ onClose }) {
 
                                     <SecondaryButton
                                         type="button"
-                                        onClick={
-                                            onClose
-                                        }
+                                        onClick={() => {
+                                            clearGameTimers();
+
+                                            gameStartedRef.current =
+                                                false;
+
+                                            difficultyRef.current =
+                                                null;
+
+                                            setGameStarted(
+                                                false
+                                            );
+
+                                            setGameOver(
+                                                false
+                                            );
+
+                                            setDifficulty(
+                                                null
+                                            );
+                                        }}
+                                    >
+                                        Change difficulty
+                                    </SecondaryButton>
+
+                                    <SecondaryButton
+                                        type="button"
+                                        onClick={onClose}
                                     >
                                         Close
                                     </SecondaryButton>
@@ -1082,9 +1480,7 @@ export default function Game({ onClose }) {
                         aria-label="Open weather journal"
                     >
                         <FiBookOpen />
-                        <span>
-                            Journal
-                        </span>
+                        <span>Journal</span>
                     </JournalToggle>
 
                     {journalOpen && (
@@ -1177,15 +1573,11 @@ export default function Game({ onClose }) {
 
                                                 <AchievementInfo>
                                                     <AchievementName>
-                                                        Games
-                                                        played
+                                                        Games played
                                                     </AchievementName>
 
                                                     <AchievementDescription>
-                                                        Your
-                                                        total
-                                                        Weather
-                                                        Rush
+                                                        Total Weather Rush
                                                         sessions
                                                     </AchievementDescription>
                                                 </AchievementInfo>
@@ -1204,20 +1596,67 @@ export default function Game({ onClose }) {
 
                                                 <AchievementInfo>
                                                     <AchievementName>
-                                                        Best
-                                                        score
+                                                        Easy best
                                                     </AchievementName>
 
                                                     <AchievementDescription>
-                                                        Your
-                                                        highest
-                                                        score
+                                                        Best Easy score
                                                     </AchievementDescription>
                                                 </AchievementInfo>
 
                                                 <AchievementName>
                                                     {
-                                                        stats.bestScore
+                                                        stats
+                                                            .bestScores
+                                                            .easy
+                                                    }
+                                                </AchievementName>
+                                            </Achievement>
+
+                                            <Achievement>
+                                                <AchievementIcon>
+                                                    🌦️
+                                                </AchievementIcon>
+
+                                                <AchievementInfo>
+                                                    <AchievementName>
+                                                        Medium best
+                                                    </AchievementName>
+
+                                                    <AchievementDescription>
+                                                        Best Medium score
+                                                    </AchievementDescription>
+                                                </AchievementInfo>
+
+                                                <AchievementName>
+                                                    {
+                                                        stats
+                                                            .bestScores
+                                                            .medium
+                                                    }
+                                                </AchievementName>
+                                            </Achievement>
+
+                                            <Achievement>
+                                                <AchievementIcon>
+                                                    ⛈️
+                                                </AchievementIcon>
+
+                                                <AchievementInfo>
+                                                    <AchievementName>
+                                                        Hard best
+                                                    </AchievementName>
+
+                                                    <AchievementDescription>
+                                                        Best Hard score
+                                                    </AchievementDescription>
+                                                </AchievementInfo>
+
+                                                <AchievementName>
+                                                    {
+                                                        stats
+                                                            .bestScores
+                                                            .hard
                                                     }
                                                 </AchievementName>
                                             </Achievement>
@@ -1229,14 +1668,11 @@ export default function Game({ onClose }) {
 
                                                 <AchievementInfo>
                                                     <AchievementName>
-                                                        Best
-                                                        combo
+                                                        Best combo
                                                     </AchievementName>
 
                                                     <AchievementDescription>
-                                                        Highest
-                                                        combo
-                                                        reached
+                                                        Highest combo reached
                                                     </AchievementDescription>
                                                 </AchievementInfo>
 
@@ -1255,13 +1691,11 @@ export default function Game({ onClose }) {
 
                                                 <AchievementInfo>
                                                     <AchievementName>
-                                                        Sun
-                                                        shards
+                                                        Sun objects
                                                     </AchievementName>
 
                                                     <AchievementDescription>
-                                                        Total
-                                                        collected
+                                                        Total collected
                                                     </AchievementDescription>
                                                 </AchievementInfo>
 
@@ -1279,13 +1713,11 @@ export default function Game({ onClose }) {
 
                                                 <AchievementInfo>
                                                     <AchievementName>
-                                                        Rain
-                                                        drops
+                                                        Rain drops
                                                     </AchievementName>
 
                                                     <AchievementDescription>
-                                                        Total
-                                                        collected
+                                                        Total collected
                                                     </AchievementDescription>
                                                 </AchievementInfo>
 
@@ -1302,8 +1734,7 @@ export default function Game({ onClose }) {
                                     2 && (
                                         <JournalPage>
                                             <JournalPageTitle>
-                                                Weather
-                                                Collection
+                                                Weather Collection
                                             </JournalPageTitle>
 
                                             <WeatherCollection>
