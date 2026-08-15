@@ -12,6 +12,7 @@ import Profile from "./components/Profile/Profile";
 import WeatherMap from "./components/WeatherMap/WeatherMap";
 import ColorModal from "./components/ColorModal/ColorModal";
 import BackToTop from "./components/BackToTop/BackToTop";
+import Game from "./components/Game/Game";
 // import WeatherTest from "./components/WeatherTest/WeatherTest";
 
 import { GlobalStyle } from "./GlobalStyle";
@@ -36,10 +37,9 @@ const darkTheme = {
 export default function App() {
   const [user, setUser] = useState(null);
   const [avatar, setAvatar] = useState(null);
-
   const [cities, setCities] = useState([]);
   const [favorites, setFavorites] = useState([]);
-
+  const [isGameOpen, setIsGameOpen] = useState(false);
   const [temperatureUnit, setTemperatureUnit] =
     useState(() => {
       return (
@@ -146,6 +146,14 @@ export default function App() {
     );
 
     setUser(updatedUser);
+  };
+
+  const openGame = () => {
+    setIsGameOpen(true);
+  };
+
+  const closeGame = () => {
+    setIsGameOpen(false);
   };
 
   const handleAvatarChange = (
@@ -416,6 +424,7 @@ export default function App() {
           avatar={avatar}
           onSignUp={openSignUp}
           onProfile={openProfile}
+          onGame={openGame}
           darkMode={darkMode}
           onToggle={toggleTheme}
         />
@@ -500,6 +509,9 @@ export default function App() {
             }
           />
         )}
+
+        {isGameOpen && (<Game onClose={closeGame} />)}
+
         <BackToTop />
       </AppWrapper>
     </ThemeProvider>

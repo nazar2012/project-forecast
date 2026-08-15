@@ -29,6 +29,7 @@ export default function Header({
   avatar,
   onSignUp,
   onProfile,
+  onGame,
   darkMode,
   onToggle,
 }) {
@@ -40,20 +41,24 @@ export default function Header({
       setIsScrolled(window.scrollY > 40);
     };
 
-    window.addEventListener(
-      "scroll",
-      handleScroll
-    );
+    window.addEventListener("scroll", handleScroll);
 
     handleScroll();
 
     return () => {
-      window.removeEventListener(
-        "scroll",
-        handleScroll
-      );
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  const handleGameClick = (event) => {
+    event.preventDefault();
+
+    if (onGame) {
+      onGame();
+    }
+
+    setMenu(false);
+  };
 
   return (
     <HeaderWrapper $scrolled={isScrolled}>
@@ -79,6 +84,13 @@ export default function Header({
 
         <NavLink href="#menu">
           Menu
+        </NavLink>
+
+        <NavLink
+          href="#game"
+          onClick={handleGameClick}
+        >
+          🎮 Game
         </NavLink>
       </Navigation>
 
@@ -142,6 +154,13 @@ export default function Header({
 
             <NavLink href="#menu">
               Menu
+            </NavLink>
+
+            <NavLink
+              href="#game"
+              onClick={handleGameClick}
+            >
+              🎮 Game
             </NavLink>
           </MobileLinks>
 
