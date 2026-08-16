@@ -12,6 +12,8 @@ import {
   Actions,
   DesktopThemeToggle,
   SignUpButton,
+  UserArea,
+  UserName,
   UserIcon,
   UserAvatar,
   MobileMenuButton,
@@ -19,6 +21,8 @@ import {
   MobileMenuContent,
   MobileLinks,
   MobileActions,
+  MobileUserInfo,
+  MobileUserName,
   MobileUserIcon,
   MobileSignUpButton,
   MobileTheme,
@@ -83,6 +87,11 @@ export default function Header({
     setMenu(false);
   };
 
+  const userName =
+    user?.name ||
+    user?.username ||
+    "";
+
   return (
     <HeaderWrapper
       $scrolled={isScrolled}
@@ -138,24 +147,53 @@ export default function Header({
           </SignUpButton>
         )}
 
-        <UserIcon
-          onClick={onProfile}
-          role="button"
-          tabIndex={0}
-          aria-label="Open profile"
-        >
-          {avatar ? (
-            <UserAvatar
-              src={avatar}
-              alt="Profile"
-            />
-          ) : (
-            <img
-              src={userIcon}
-              alt="Profile"
-            />
-          )}
-        </UserIcon>
+        {user && userName && (
+          <UserArea
+            onClick={onProfile}
+            role="button"
+            tabIndex={0}
+            aria-label="Open profile"
+          >
+            <UserName>
+              {userName}
+            </UserName>
+
+            <UserIcon>
+              {avatar ? (
+                <UserAvatar
+                  src={avatar}
+                  alt="Profile"
+                />
+              ) : (
+                <img
+                  src={userIcon}
+                  alt="Profile"
+                />
+              )}
+            </UserIcon>
+          </UserArea>
+        )}
+
+        {!user && (
+          <UserIcon
+            onClick={onProfile}
+            role="button"
+            tabIndex={0}
+            aria-label="Open profile"
+          >
+            {avatar ? (
+              <UserAvatar
+                src={avatar}
+                alt="Profile"
+              />
+            ) : (
+              <img
+                src={userIcon}
+                alt="Profile"
+              />
+            )}
+          </UserIcon>
+        )}
       </Actions>
 
       <MobileMenuButton
@@ -210,19 +248,51 @@ export default function Header({
           </MobileLinks>
 
           <MobileActions $open={menu}>
-            <MobileUserIcon onClick={onProfile}>
-              {avatar ? (
-                <UserAvatar
-                  src={avatar}
-                  alt="Profile"
-                />
-              ) : (
-                <img
-                  src={userIcon}
-                  alt="Profile"
-                />
-              )}
-            </MobileUserIcon>
+            {user && userName ? (
+              <MobileUserInfo
+                onClick={onProfile}
+                role="button"
+                tabIndex={0}
+                aria-label="Open profile"
+              >
+                <MobileUserName>
+                  {userName}
+                </MobileUserName>
+
+                <MobileUserIcon>
+                  {avatar ? (
+                    <UserAvatar
+                      src={avatar}
+                      alt="Profile"
+                    />
+                  ) : (
+                    <img
+                      src={userIcon}
+                      alt="Profile"
+                    />
+                  )}
+                </MobileUserIcon>
+              </MobileUserInfo>
+            ) : (
+              <MobileUserIcon
+                onClick={onProfile}
+                role="button"
+                tabIndex={0}
+                aria-label="Open profile"
+              >
+                {avatar ? (
+                  <UserAvatar
+                    src={avatar}
+                    alt="Profile"
+                  />
+                ) : (
+                  <img
+                    src={userIcon}
+                    alt="Profile"
+                  />
+                )}
+              </MobileUserIcon>
+            )}
 
             {!user && (
               <MobileSignUpButton

@@ -281,9 +281,110 @@ export const SignUpButton = styled.button`
   }
 `;
 
+export const UserArea = styled.div`
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 4px 5px 4px 14px;
+
+  min-height: 42px;
+
+  border-radius: 999px;
+
+  background: ${({ theme }) =>
+    `${theme.background}B8`};
+
+  border: 1px solid
+    ${({ theme }) =>
+    `${theme.text}18`};
+
+  box-shadow:
+    0 4px 16px
+      rgba(0, 0, 0, 0.08),
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.16);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  cursor: pointer;
+
+  user-select: none;
+
+  transition:
+    transform 0.28s ease,
+    background 0.28s ease,
+    border-color 0.28s ease,
+    box-shadow 0.28s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+
+    background: ${({ theme }) =>
+    `${theme.background}D6`};
+
+    border-color: ${({ theme }) =>
+    `${theme.accent}44`};
+
+    box-shadow:
+      0 8px 24px
+        rgba(0, 0, 0, 0.13),
+      0 0 0 1px
+        ${({ theme }) =>
+    `${theme.accent}18`},
+      inset 0 1px 0
+        rgba(255, 255, 255, 0.2);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:focus-visible {
+    outline: none;
+
+    box-shadow:
+      0 0 0 2px
+        ${({ theme }) =>
+    `${theme.accent}55`},
+      0 8px 24px
+        rgba(0, 0, 0, 0.12);
+  }
+`;
+
+export const UserName = styled.span`
+  max-width: 135px;
+
+  color: ${({ theme }) =>
+    theme.text};
+
+  font-size: 13px;
+  font-weight: 500;
+
+  line-height: 1;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  text-align: center;
+
+  transition:
+    color 0.25s ease,
+    opacity 0.25s ease;
+
+  ${UserArea}:hover & {
+    opacity: 0.9;
+  }
+`;
+
 export const UserIcon = styled.div`
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
 
   display: flex;
   align-items: center;
@@ -294,62 +395,28 @@ export const UserIcon = styled.div`
   background: ${({ theme }) =>
     theme.secondary};
 
-  cursor: pointer;
   overflow: hidden;
 
   position: relative;
 
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.3s ease,
-    background 0.3s ease;
+  border: 1px solid
+    ${({ theme }) =>
+    `${theme.text}20`};
 
-  &:hover {
-    transform: scale(1.08);
+  box-shadow:
+    0 2px 8px
+      rgba(0, 0, 0, 0.1);
+
+  transition:
+    transform 0.28s ease,
+    box-shadow 0.28s ease;
+
+  ${UserArea}:hover & {
+    transform: scale(1.04);
 
     box-shadow:
-      0 0 0 3px
-        ${({ theme }) =>
-    `${theme.accent}33`},
-      0 0 18px
-        ${({ theme }) =>
-    `${theme.accent}88`},
-      0 5px 20px
-        rgba(0, 0, 0, 0.18);
-  }
-
-  &:active {
-    transform: scale(0.96);
-  }
-
-  &::after {
-    content: "";
-
-    position: absolute;
-
-    inset: -2px;
-
-    border-radius: 50%;
-
-    border: 1px solid
-      ${({ theme }) =>
-    theme.accent};
-
-    opacity: 0;
-
-    transform: scale(0.8);
-
-    transition:
-      opacity 0.3s ease,
-      transform 0.3s ease;
-
-    pointer-events: none;
-  }
-
-  &:hover::after {
-    opacity: 0.7;
-
-    transform: scale(1);
+      0 3px 12px
+        rgba(0, 0, 0, 0.15);
   }
 
   img {
@@ -360,9 +427,6 @@ export const UserIcon = styled.div`
 
     object-fit: cover;
     object-position: center;
-
-    position: relative;
-    z-index: 2;
   }
 `;
 
@@ -435,18 +499,21 @@ export const MobileNavigation = styled.div`
   box-sizing: border-box;
 
   background: ${({ theme }) =>
-    theme.background};
+    `${theme.background}E6`};
 
   color: ${({ theme }) =>
     theme.text};
 
   border-top: 1px solid
     ${({ theme }) =>
-    theme.secondary};
+    `${theme.text}12`};
 
   box-shadow:
-    0 8px 20px
+    0 8px 24px
     rgba(0, 0, 0, 0.12);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 
   z-index: 100;
 
@@ -501,11 +568,6 @@ export const MobileLinks = styled.nav`
   flex-direction: column;
 
   gap: 15px;
-
-  a {
-    opacity: ${({ children }) =>
-    children ? undefined : 1};
-  }
 `;
 
 export const MobileActions = styled.div`
@@ -532,9 +594,102 @@ export const MobileActions = styled.div`
       0.2s;
 `;
 
+export const MobileUserInfo = styled.div`
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 4px 5px 4px 13px;
+
+  min-height: 42px;
+
+  border-radius: 999px;
+
+  background: ${({ theme }) =>
+    `${theme.background}B8`};
+
+  border: 1px solid
+    ${({ theme }) =>
+    `${theme.text}18`};
+
+  box-shadow:
+    0 4px 16px
+      rgba(0, 0, 0, 0.08),
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.16);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  cursor: pointer;
+
+  user-select: none;
+
+  transition:
+    transform 0.28s ease,
+    background 0.28s ease,
+    border-color 0.28s ease,
+    box-shadow 0.28s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+
+    background: ${({ theme }) =>
+    `${theme.background}D6`};
+
+    border-color: ${({ theme }) =>
+    `${theme.accent}44`};
+
+    box-shadow:
+      0 8px 24px
+        rgba(0, 0, 0, 0.13),
+      0 0 0 1px
+        ${({ theme }) =>
+    `${theme.accent}18`},
+      inset 0 1px 0
+        rgba(255, 255, 255, 0.2);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:focus-visible {
+    outline: none;
+
+    box-shadow:
+      0 0 0 2px
+        ${({ theme }) =>
+    `${theme.accent}55`},
+      0 8px 24px
+        rgba(0, 0, 0, 0.12);
+  }
+`;
+
+export const MobileUserName = styled.span`
+  max-width: 120px;
+
+  color: ${({ theme }) =>
+    theme.text};
+
+  font-size: 13px;
+  font-weight: 500;
+
+  line-height: 1;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  text-align: center;
+`;
+
 export const MobileUserIcon = styled.div`
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
 
   display: flex;
   align-items: center;
@@ -545,19 +700,26 @@ export const MobileUserIcon = styled.div`
   background: ${({ theme }) =>
     theme.secondary};
 
-  cursor: pointer;
   overflow: hidden;
 
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease;
+  border: 1px solid
+    ${({ theme }) =>
+    `${theme.text}20`};
 
-  &:hover {
-    transform: scale(1.06);
+  box-shadow:
+    0 2px 8px
+      rgba(0, 0, 0, 0.1);
+
+  transition:
+    transform 0.28s ease,
+    box-shadow 0.28s ease;
+
+  ${MobileUserInfo}:hover & {
+    transform: scale(1.04);
 
     box-shadow:
-      0 5px 15px
-      rgba(0, 0, 0, 0.15);
+      0 3px 12px
+        rgba(0, 0, 0, 0.15);
   }
 
   img {
